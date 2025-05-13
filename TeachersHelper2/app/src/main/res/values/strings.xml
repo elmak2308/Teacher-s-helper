@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Teacher\'s Helper</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="subject_rus">Предметы</string>
+    <string name="search">Search</string>
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
+    <string name="Name_ozenka">Оценки</string>
+    <string name="Description_ozenka">Оценка</string>
+    <string name="Main_screen">Главная</string>
+    <string name="Name_subject">Предметы</string>
+    <string name="name_math">Математика</string>
+    <string name="name_rus">Русский язык</string>
+    <string name="name_kit">Китайский язык</string>
+    <string name="name_obzr">ОБиЗР</string>
+    <string name="name_lit">Литература</string>
+    <string name="name_nem">Немецкий язык</string>
+    <string name="name_geo">География</string>
+    <string name="name_infor">Информатика</string>
+    <string name="name_bio">Биология</string>
+    <string name="name_fisika">Физика</string>
+    <string name="name_obsh">Обществознание</string>
+    <string name="name_history">История</string>
+    <string name="name_mark">Оценки</string>
+    <string name="reg_vxod_kringe">Регистрация / Вход</string>
+    <string name="log_bykvi">Введите логин</string>
+    <string name="parol">Введите пароль</string>
+    <string name="otmena">ОТМЕНА</string>
+    <string name="ok">ОК</string>
+    <string name="Settings">Настройки</string>
+    <string name="Confidenshial">Конфиденциальность</string>
+    <string name="Change_image">Изменить фото</string>
+    <string name="gmail">user_name</string>
+    <string name="user_gmail_com">user@gmail.com</string>
+    <string name="user_puser">User Puser</string>
+    <string name="phone_number">+7**********</string>
+    <string name="zabilparol">Забыли пароль?</string>
+</resources>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".SubjectsFragment"
+    android:id="@+id/subjectsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view_subb"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_marginBottom="25dp"
+        android:background="#FFB7CD"
+        app:elevation="8dp"
+        app:itemPaddingBottom="10dp"
+        app:itemPaddingTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:ignore="ExtraText">
+
+        <ImageButton
+            android:id="@+id/home_subb"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="-139dp"
+            android:layout_marginLeft="-139dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/home"
+            android:src="@drawable/icon_home"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <ImageButton
+            android:id="@+id/search_subb"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/search"
+            android:src="@drawable/icon__search"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <ImageButton
+            android:id="@+id/flow_subb"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="139dp"
+            android:layout_marginLeft="139dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/settings"
+            android:src="@drawable/icon_flow"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_subb"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="1dp"
+        android:background="#FFB7CD"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ExtraText,MissingConstraints">
+
+        <ImageButton
+            android:id="@+id/back_subject_to_home"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="#00FFFFFF"
+            app:tint="#000000"
+            android:contentDescription="back"
+            android:src="?attr/homeAsUpIndicator"
+            tools:layout_editor_absoluteX="30dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="20dp"
+            android:contentDescription="@string/subject_rus"
+            android:text="@string/Name_subject"
+            android:textColor="@color/black"
+            android:textSize="36sp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="28dp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:maxWidth="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view_subb"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_subb"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/math_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="35dp"
+                android:text="@string/name_math"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/rus_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_rus"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/lit_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_lit"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/obzr_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_obzr"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/kit_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_kit"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/nem_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_nem"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/geo_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_geo"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/info_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_infor"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/bio_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_bio"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/fis_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_fisika"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/history_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_history"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
+                android:id="@+id/obshec_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:layout_marginBottom="19dp"
+                android:text="@string/name_obsh"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

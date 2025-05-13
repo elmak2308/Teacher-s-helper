@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".SettingsFragment"
+    android:id="@+id/settingsFragment">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_sett"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginTop="18dp"
+        android:background="#FFB7CD"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ExtraText,MissingConstraints">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="0.6dp"
+            android:text="@string/Settings"
+            android:textColor="@color/black"
+            android:textSize="36sp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="28dp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:maxWidth="1dp"
+        android:layout_marginStart="37dp"
+        android:layout_marginEnd="37dp"
+        android:background="#FFDBEB"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view_sett"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_sett"
+        app:layout_constraintVertical_bias="1.0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imageView_sett"
+                    android:layout_width="104dp"
+                    android:layout_height="106dp"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="20dp"
+                    tools:src="@tools:sample/avatars" />
+
+                <Button
+                    android:id="@+id/change_profile_photo_sett"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="28dp"
+                    android:background="#00FFFFFF"
+                    android:padding="0dp"
+                    android:text="@string/Change_image"
+                    android:textColor="@color/black"
+                    app:cornerRadius="0dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="45dp"
+                android:layout_marginRight="15dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView_name_sett"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="47dp"
+                    android:text="@string/user_puser"
+                    android:textColor="@color/black"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/textView_name_sett_eng"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="@string/gmail"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/textView_e_mail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="@string/user_gmail_com"
+                    android:textColor="#5E5E5E" />
+
+                <TextView
+                    android:id="@+id/textView_phone_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="@string/phone_number"
+                    android:textColor="@color/black" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divider_sett"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="?android:attr/listDivider"
+            android:backgroundTint="#FF005E" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="25dp"
+                    android:text="@string/Confidenshial"
+                    android:textAlignment="center"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="25dp"
+                    android:text="@string/Confidenshial"
+                    android:textAlignment="center"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="25dp"
+                    android:text="@string/Confidenshial"
+                    android:textAlignment="center"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="25dp"
+                    android:text="@string/Confidenshial"
+                    android:textAlignment="center"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="25dp"
+                    android:text="@string/Confidenshial"
+                    android:textAlignment="center"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="25dp"
+                    android:text="@string/Confidenshial"
+                    android:textAlignment="center"
+                    android:textSize="24sp" />
+
+
+            </LinearLayout>
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/textView_sett"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view_sett"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_marginBottom="25dp"
+        android:background="#FFB7CD"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:ignore="ExtraText">
+
+        <ImageButton
+            android:id="@+id/home_sett"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="-139dp"
+            android:layout_marginLeft="-139dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/home"
+            android:src="@drawable/icon_home"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <ImageButton
+            android:id="@+id/search_sett"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/search"
+            android:src="@drawable/icon__search"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <ImageButton
+            android:id="@+id/flow_sett"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="139dp"
+            android:layout_marginLeft="139dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/settings"
+            android:src="@drawable/icon_flow"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <View
+            android:id="@+id/view_sett"
+            android:layout_width="130dp"
+            android:layout_height="90dp"
+            android:layout_gravity="right"
+            android:background="#56F6216C" />
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

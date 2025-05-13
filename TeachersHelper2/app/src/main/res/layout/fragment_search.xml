@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#FFFFFF"
+    android:layout_height="match_parent"
+    tools:context=".SearchFragment">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view_search"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_marginBottom="25dp"
+        android:background="#FFB7CD"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:ignore="ExtraText">
+
+        <ImageButton
+            android:id="@+id/home_search"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="-139dp"
+            android:layout_marginLeft="-139dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/home"
+            android:src="@drawable/icon_home"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <ImageButton
+            android:id="@+id/search_search"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/search"
+            android:src="@drawable/icon__search"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <ImageButton
+            android:id="@+id/flow_search"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="139dp"
+            android:layout_marginLeft="139dp"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/settings"
+            android:src="@drawable/icon_flow"
+            app:strokeColor="#000000"
+            tools:ignore="ExtraText" />
+
+        <View
+            android:id="@+id/view_home"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="#56F6216C" />
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <SearchView
+        style="@android:style/Widget.Material.Light.SearchView"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginTop="18dp"
+        android:background="#FFB7CD"
+        android:queryHint="Поиск"
+        android:scrollbars="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+    </SearchView>
+
+    <!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar_search"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="75dp"-->
+<!--        android:layout_marginTop="18dp"-->
+<!--        android:background="#FFB7CD"-->
+<!--        android:minHeight="?attr/actionBarSize"-->
+<!--        android:theme="?attr/actionBarTheme"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:ignore="ExtraText,MissingConstraints">-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="right"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:text=""-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="36sp"-->
+<!--            tools:layout_editor_absoluteX="16dp"-->
+<!--            tools:layout_editor_absoluteY="28dp" />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/back_marks_to_home"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background="#00FFFFFF"-->
+<!--            android:contentDescription="back"-->
+<!--            android:src="?attr/homeAsUpIndicator"-->
+<!--            app:tint="#000000"-->
+<!--            tools:layout_editor_absoluteX="30dp"-->
+<!--            tools:layout_editor_absoluteY="16dp" />-->
+
+<!--    </androidx.appcompat.widget.Toolbar>-->
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
