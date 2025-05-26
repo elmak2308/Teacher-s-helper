@@ -159,27 +159,51 @@
                     android:textAlignment="center"
                     android:textSize="24sp" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="25dp"
-                    android:textColor="@color/black"
-                    android:layout_marginBottom="25dp"
-                    android:text="@string/Choose_subject"
-                    android:textAlignment="center"
-                    android:textSize="24sp" />
+                    android:orientation="horizontal"
+                    android:layout_gravity="center">
 
-                <TextView
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="25dp"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginLeft="30dp"
+                        android:text="@string/Choose_subject"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="24sp" />
+
+
+                    <Spinner
+                        android:id="@+id/choose_subject_spin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:entries="@array/Choose_subject_spinner_text"/>
+
+
+                </LinearLayout>
+
+
+                <Switch
+                    android:id="@+id/switch_to"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="25dp"
-                    android:textColor="@color/black"
                     android:layout_marginBottom="25dp"
-                    android:text="@string/Confidenshial"
-                    android:textAlignment="center"
-                    android:textSize="24sp" />
+                    android:layout_marginLeft="45dp"
+                    android:layout_marginRight="45dp"
+                    android:textColor="@color/black"
+                    android:text="Рофлы"
+                    android:layout_gravity="center"
+                    android:textSize="24sp"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
 
                 <TextView
                     android:layout_width="match_parent"

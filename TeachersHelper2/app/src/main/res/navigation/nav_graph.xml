@@ -88,7 +88,18 @@
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/action_loginFragment_to_homeFragment"
+            android:id="@+id/action_loginFragment_to_loginparolFragment2"
+            app:destination="@id/loginparolFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginparolFragment2"
+        android:name="com.hfad.teachershelper.LoginparolFragment"
+        android:label="LoginparolFragment" >
+        <action
+            android:id="@+id/action_loginparolFragment2_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_loginparolFragment2_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 </navigation>

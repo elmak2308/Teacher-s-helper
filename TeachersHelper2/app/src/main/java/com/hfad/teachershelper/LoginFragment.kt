@@ -14,11 +14,11 @@ class LoginFragment : Fragment() {
                                savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_login, container, false)
-        val okButton = view.findViewById<Button>(R.id.okei)
+        val okButton = view.findViewById<Button>(R.id.okei_to_loginparol)
 
         okButton.setOnClickListener {
             view.findNavController()
-                .navigate(R.id.action_loginFragment_to_homeFragment)
+                .navigate(R.id.action_loginFragment_to_loginparolFragment2)
         }
 
         return view

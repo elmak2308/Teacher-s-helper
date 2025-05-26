@@ -22,6 +22,7 @@
     <string name="name_fisika">Физика</string>
     <string name="name_obsh">Обществознание</string>
     <string name="name_history">История</string>
+    <string name="name_chemistry">Химия</string>
     <string name="name_mark">Оценки</string>
     <string name="reg_vxod_kringe">Регистрация / Вход</string>
     <string name="log_bykvi">Введите логин</string>
@@ -37,4 +38,19 @@
     <string name="phone_number">+7**********</string>
     <string name="zabilparol">Забыли пароль?</string>
     <string name="Choose_subject">Выбор предмета</string>
+    <string-array name="Choose_subject_spinner_text">
+        <item>Математика</item>
+        <item>Русский язык</item>
+        <item>Китайский язык</item>
+        <item>ОБиЗР</item>
+        <item>Литература</item>
+        <item>Немецкий язык</item>
+        <item>География</item>
+        <item>Информатика</item>
+        <item>Биология</item>
+        <item>Физика</item>
+        <item>Обществознание</item>
+        <item>История</item>
+        <item>Химия</item>
+    </string-array>
 </resources>

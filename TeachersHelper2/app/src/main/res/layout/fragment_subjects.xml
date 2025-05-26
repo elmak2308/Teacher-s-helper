@@ -190,6 +190,18 @@
                 app:cornerRadius="0dp" />
 
             <Button
+                android:id="@+id/chemestry_subb"
+                android:layout_width="358dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="19dp"
+                android:text="@string/name_chemistry"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                app:backgroundTint="#FFE9EF"
+                app:cornerRadius="0dp" />
+
+            <Button
                 android:id="@+id/nem_subb"
                 android:layout_width="358dp"
                 android:layout_height="70dp"
