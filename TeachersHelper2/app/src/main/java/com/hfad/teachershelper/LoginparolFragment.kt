@@ -17,6 +17,7 @@ class LoginparolFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_loginparol, container, false)
         val okButtonhome = view.findViewById<Button>(R.id.okei_to_home)
         val otmenaButtontologin = view.findViewById<Button>(R.id.otmena_reg)
+        val zabilParolButton = view.findViewById<Button>(R.id.parolzabil)
 
         okButtonhome.setOnClickListener {
             view.findNavController()
@@ -26,6 +27,11 @@ class LoginparolFragment : Fragment() {
         otmenaButtontologin.setOnClickListener {
             view.findNavController()
                 .navigate(R.id.action_loginparolFragment2_to_loginFragment)
+        }
+
+        zabilParolButton.setOnClickListener {
+            view.findNavController()
+                .navigate(R.id.action_loginparolFragment2_to_zabilParolFragment)
         }
 
         return view

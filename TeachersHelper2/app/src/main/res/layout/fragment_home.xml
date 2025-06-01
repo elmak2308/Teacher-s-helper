@@ -151,6 +151,20 @@
             app:cornerRadius="0dp"
             tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/chat"
+            android:layout_width="358dp"
+            android:layout_height="98dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:contentDescription="subject"
+            android:text="@string/rofl_chat"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            app:backgroundTint="#FFE9EF"
+            app:cornerRadius="0dp"
+            tools:ignore="HardcodedText" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

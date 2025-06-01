@@ -26,6 +26,7 @@ class HomeFragment : Fragment() {
         val settingButton = view.findViewById<ImageButton>(R.id.flow_home)
 //        val buttonNavView = view.findViewById<BottomNavigationView>(R.id.bottomNavigationView_home)
         val searchButton = view.findViewById<ImageButton>(R.id.search_home)
+        val roflchat = view.findViewById<Button>(R.id.chat)
 
         subjectButton.setOnClickListener {
             view.findNavController()
@@ -45,6 +46,11 @@ class HomeFragment : Fragment() {
         searchButton.setOnClickListener {
             view.findNavController()
                 .navigate(R.id.action_homeFragment_to_searchFragment)
+        }
+
+        roflchat.setOnClickListener {
+            view.findNavController()
+                .navigate(R.id.action_homeFragment_to_chatFragment2)
         }
 
 //        buttonNavView.setOnItemSelectedListener {  item ->

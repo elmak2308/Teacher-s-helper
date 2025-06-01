@@ -148,15 +148,16 @@
                 android:orientation="vertical">
 
 
-                <TextView
+                <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="25dp"
-                    android:textColor="@color/black"
                     android:layout_marginBottom="25dp"
-                    android:text="@string/Confidenshial"
+                    android:background="#00FFFFFF"
+                    android:text="@string/personal_data"
                     android:textAlignment="center"
+                    android:textColor="@color/black"
                     android:textSize="24sp" />
 
                 <LinearLayout

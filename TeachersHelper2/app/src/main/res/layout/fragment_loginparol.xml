@@ -45,43 +45,56 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view3">
 
-
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginStart="0dp"
             android:layout_marginTop="17dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginBottom="46dp"
             android:text="@string/reg_vxod_kringe"
             android:textColor="@color/black"
             android:textSize="32sp"
-            app:layout_constraintBottom_toTopOf="@+id/login_to_vxod"
             app:layout_constraintEnd_toEndOf="@id/okno"
             app:layout_constraintStart_toStartOf="@id/okno"
             app:layout_constraintTop_toTopOf="@+id/okno" />
 
-        <EditText
-            android:id="@+id/login_to_vxod"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginStart="18dp"
-            android:layout_marginEnd="18dp"
-            android:hint="@string/log_bykvi"
-            android:inputType="text"
-            android:textColor="@color/black"
-            android:textColorHighlight="#090909"
-            android:textColorHint="#000000"
-            android:textColorLink="#000000"
-            android:textSize="18sp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/okno"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view3">
+
+            <ImageView
+                android:id="@+id/account_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                app:srcCompat="@android:drawable/ic_menu_myplaces" />
+
+            <TextView
+                android:id="@+id/choose_account_spin"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="20dp"
+                android:textSize="18sp"
+                android:text="@string/account_text" />
+        </LinearLayout>
 
         <EditText
             android:id="@+id/parol_parol"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
             android:layout_marginStart="18dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="25dp"
             android:layout_marginEnd="18dp"
             android:hint="@string/parol"
             android:inputType="textPassword"
@@ -95,14 +108,16 @@
             android:id="@+id/parolzabil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:background="#00FFFFFF"
             android:text="@string/zabilparol"
             android:textColor="#C62BFF"
             android:textSize="16sp"
             app:cornerRadius="0dp" />
 
+
     </LinearLayout>
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline1"

@@ -38,6 +38,11 @@
     <string name="phone_number">+7**********</string>
     <string name="zabilparol">Забыли пароль?</string>
     <string name="Choose_subject">Выбор предмета</string>
+    <string name="personal_data">Личные данные</string>
+    <string name="rofl_chat">Рофл-чат</string>
+    <string name="Input_text_message">Введите сообщение</string>
+    <string name="message_in_rofl_chat">Сообщение</string>
+    <string name="account_text">Аккаунт</string>
     <string-array name="Choose_subject_spinner_text">
         <item>Математика</item>
         <item>Русский язык</item>
@@ -52,5 +57,12 @@
         <item>Обществознание</item>
         <item>История</item>
         <item>Химия</item>
+    </string-array>
+    <string-array name="Choose_account_spinner_text">
+        <item>Аккаунт1</item>
+        <item>Аккаунт2</item>
+        <item>Аккаунт3</item>
+        <item>Аккаунт4</item>
+        <item>Аккаунт5</item>
     </string-array>
 </resources>
