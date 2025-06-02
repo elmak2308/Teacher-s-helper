@@ -81,9 +81,10 @@
             <Spinner
                 android:id="@+id/choose_account_spin"
                 android:layout_width="wrap_content"
-                android:layout_marginLeft="20dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="20dp"
                 android:entries="@array/Choose_account_spinner_text" />
 
         </LinearLayout>
