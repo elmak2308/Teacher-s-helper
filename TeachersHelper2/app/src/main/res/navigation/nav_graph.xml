@@ -84,6 +84,9 @@
         <action
             android:id="@+id/action_subjectsFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_subjectsFragment_to_mathSubjectsFragment"
+            app:destination="@id/mathSubjectsFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -131,5 +134,23 @@
         <action
             android:id="@+id/action_zabilParolFragment_to_loginparolFragment2"
             app:destination="@id/loginparolFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/mathSubjectsFragment"
+        android:name="com.hfad.teachershelper.MathSubjectsFragment"
+        android:label="fragment_math_subjects"
+        tools:layout="@layout/fragment_math_subjects" >
+        <action
+            android:id="@+id/action_mathSubjectsFragment_to_subjectsFragment"
+            app:destination="@id/subjectsFragment" />
+        <action
+            android:id="@+id/action_mathSubjectsFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_mathSubjectsFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_mathSubjectsFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
 </navigation>

@@ -76,11 +76,10 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:layout_marginTop="18dp"
-        android:layout_marginBottom="1dp"
         android:background="#FFB7CD"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -91,9 +90,9 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="#00FFFFFF"
-            app:tint="#000000"
             android:contentDescription="back"
             android:src="?attr/homeAsUpIndicator"
+            app:tint="#000000"
             tools:layout_editor_absoluteX="30dp"
             tools:layout_editor_absoluteY="16dp" />
 
@@ -112,7 +111,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <ScrollView
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/recyclerView"-->
+<!--        android:layout_width="409dp"-->
+<!--        android:layout_height="521dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/nav_view_subb"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toolbar_subb" />-->
+
+        <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="0dp"

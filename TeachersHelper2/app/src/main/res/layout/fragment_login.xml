@@ -89,19 +89,20 @@
 
         </LinearLayout>
 
-        <!--        <EditText-->
-<!--            android:id="@+id/login_to_vxod"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:layout_marginStart="18dp"-->
-<!--            android:layout_marginEnd="18dp"-->
-<!--            android:hint="@string/log_bykvi"-->
-<!--            android:inputType="text"-->
-<!--            android:textColor="@color/black"-->
-<!--            android:textColorHighlight="#090909"-->
-<!--            android:textColorHint="#000000"-->
-<!--            android:textColorLink="#000000"-->
-<!--            android:textSize="18sp" />-->
+                <EditText
+            android:id="@+id/login_to_vxod"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:hint="@string/log_bykvi"
+            android:inputType="text"
+            android:textColor="@color/black"
+            android:textColorHighlight="#090909"
+            android:textColorHint="#000000"
+            android:layout_marginTop="20dp"
+            android:textColorLink="#000000"
+            android:textSize="18sp" />
 
 <!--        <EditText-->
 <!--            android:id="@+id/parol_parol"-->
