@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import androidx.navigation.findNavController
 
@@ -20,6 +21,7 @@ class SubjectsFragment : Fragment() {
         val homefromsubbButton = view.findViewById<ImageButton>(R.id.home_subb)
         val settfromsubbButton = view.findViewById<ImageButton>(R.id.flow_subb)
         val searchfromsubbButton = view.findViewById<ImageButton>(R.id.search_subb)
+        val mathSubjectButton = view.findViewById<Button>(R.id.math_subb)
 
         backsubbtohome.setOnClickListener {
             view.findNavController()
@@ -39,6 +41,11 @@ class SubjectsFragment : Fragment() {
         searchfromsubbButton.setOnClickListener {
             view.findNavController()
                 .navigate(R.id.action_subjectsFragment_to_searchFragment)
+        }
+
+        mathSubjectButton.setOnClickListener {
+            view.findNavController()
+                .navigate(R.id.action_subjectsFragment_to_mathSubjectsFragment)
         }
 
         return view
