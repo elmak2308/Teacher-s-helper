@@ -25,15 +25,21 @@ users = db.Table(
     db.Column("hashed_password", db.String),
     db.Column("disabled", db.Boolean, default=False), 
 )
-'''
-subjects = db.Table(
-    "subjects",
-    metadata,
-    db.Column("id", db.Integer, primary_key=True, index=True),
-    db.Column("name", db.String, unique=True),
+SUBJECTS_DB_URL = "sqlite:///./server/user_subjects.db"
+subjects_engine = db.create_engine(SUBJECTS_DB_URL, connect_args={"check_same_thread": False})
+SubjectsSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=subjects_engine)
+
+subjects_metadata = db.MetaData()
+user_subjects = db.Table(
+    "user_subjects",
+    subjects_metadata,
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("user_phone", db.String), 
+    db.Column("subject_name", db.String),
 )
-'''
+
 metadata.create_all(bind=engine)
+subjects_metadata.create_all(bind=subjects_engine)
 
 app = FastAPI()
 
@@ -69,6 +75,14 @@ class TokenData(BaseModel):
 class Subject(BaseModel):
     id: int
     name: str
+
+class UserSubjectCreate(BaseModel):
+    subject_name: str
+
+class UserSubject(BaseModel):
+    id: int
+    user_phone: str
+    subject_name: str
 
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
@@ -183,30 +197,44 @@ async def read_users_me(
         raise HTTPException(status_code=400, detail="Inactive user")
     
     return user
-@app.get("/subjects/", response_model=List[Subject])
-def get_subjects():
-    subjects = [
-        {"id": 1, "name": "Математика"},
-        {"id": 2, "name": "Физика"},
-        {"id": 3, "name": "Химия"},
-        {"id": 4, "name": "Биология"},
-        {"id": 5, "name": "История"},
-        {"id": 6, "name": "Литература"},
-        {"id": 7, "name": "Информатика"},
-        {"id": 8, "name": "География"},
-        {"id": 9, "name": "Обществознание"},
-        {"id": 10, "name": "Английский язык"}
-    ]
-    return subjects
-'''
-@app.get("/protected/subjects/", response_model=List[Subject])
-def get_protected_subjects(
-    token: str = Depends(oauth2_scheme),
-    db_session: Session = Depends(get_db)
-):
-    current_user = await read_users_me(token, db_session)
+
+@app.post("/subjects/add")
+def add_subject_for_user(
+        subject_in: UserSubjectCreate,
+        token:str=Depends(oauth2_scheme),
+        db_session_users : Session=Depends(get_db)):
     
-    query = db.select([subjects])
-    result = db_session.execute(query).fetchall()
-    return [dict(row) for row in result]
-'''
+     payload=jwt.decode(token ,SECRET_KEY , algorithms=[ALGORITHM])
+     phone=payload.get("sub")
+     if not phone:
+         raise HTTPException(status_code=401 ,detail="Invalid authentication")
+
+     with SubjectsSessionLocal() as sdb:
+         query_check=db.select([user_subjects]).where(
+             (user_subjects.c.user_phone==phone) & (user_subjects.c.subject_name==subject_in.subject_name))
+         result=sdb.execute(query_check).fetchone()
+         
+         if result:
+             raise HTTPException(status_code=400 ,detail="Subject already added for this user")
+         
+         insert_query=db.insert(user_subjects).values(user_phone=phone ,subject_name=subject_in.subject_name)
+         sdb.execute(insert_query)
+         sdb.commit()
+         
+     return {"message":"Subject added successfully"}
+
+@app.get("/subjects/", response_model=List[Subject])
+def get_user_subjects(token:str=Depends(oauth2_scheme)):
+     payload=jwt.decode(token ,SECRET_KEY , algorithms=[ALGORITHM])
+     phone=payload.get("sub")
+     if not phone:
+         raise HTTPException(status_code=401 ,detail="Invalid authentication")
+     with SubjectsSessionLocal() as sdb:
+         query=db.select([user_subjects]).where(user_subjects.c.user_phone==phone)
+         results=sdb.execute(query).fetchall()
+         
+         subjects_list=[]
+         for row in results:
+             subjects_list.append({"id":row.id,"name":row.subject_name})
+             
+     return subjects_list
