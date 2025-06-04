@@ -4,8 +4,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface SubjectAPI {
-    @GET("subjects/{id}")
+    @GET("subjects/")
 //короче тут должна быть ссылка на предмет
     //типо как понять какой предмет каким по счету
-    suspend fun getSubjectById(@Path("id") id: Int): Subject
+    suspend fun getSubjectById(): List<Subject>
+    //@Path("id") id: Int
 }

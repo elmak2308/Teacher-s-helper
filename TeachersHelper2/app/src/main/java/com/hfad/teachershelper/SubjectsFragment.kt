@@ -22,6 +22,13 @@ import retrofit2.create
 
 class SubjectsFragment : Fragment() {
 
+    private fun runOnUiThread(action: () -> Unit) {
+        this ?: return
+        if (!isAdded) return
+        activity?.runOnUiThread(action)
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
@@ -31,7 +38,7 @@ class SubjectsFragment : Fragment() {
         val homefromsubbButton = view.findViewById<ImageButton>(R.id.home_subb)
         val settfromsubbButton = view.findViewById<ImageButton>(R.id.flow_subb)
         val searchfromsubbButton = view.findViewById<ImageButton>(R.id.search_subb)
-        val mathSubjectButton = view.findViewById<Button>(R.id.math_subb)
+//        val mathSubjectButton = view.findViewById<Button>(R.id.math_subb)
 
         backsubbtohome.setOnClickListener {
             view.findNavController()
@@ -53,25 +60,18 @@ class SubjectsFragment : Fragment() {
                 .navigate(R.id.action_subjectsFragment_to_searchFragment)
         }
 
-        mathSubjectButton.setOnClickListener {
-            view.findNavController()
-                .navigate(R.id.action_subjectsFragment_to_mathSubjectsFragment)
-        }
+//        mathSubjectButton.setOnClickListener {
+//            view.findNavController()
+//                .navigate(R.id.action_subjectsFragment_to_mathSubjectsFragment)
+//        }
 
-        return view
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_subjects)
-
-        val tv = findViewById<TextView>(R.id.55) //вместо 55 должно быть айди куда показывать
-        val b = findViewById<Button>(R.id.66) //вместо 66 должно быть айди или что-нибудь
+        val tv = view.findViewById<TextView>(R.id.trix) //вместо 55 должно быть айди куда показывать
+        val b = view.findViewById<Button>(R.id.button) //вместо 66 должно быть айди или что-нибудь
         //что вызывает показ списка предметов, возможно и типо буттон нужно поменять
         //а так же наверное такое стоит наверное писать в верхнем онкреате
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://")//тут должна быть ссылка родительская
+            .baseUrl("http://10.0.2.2:8000/")//тут должна быть ссылка родительская
             //типо ссылка постоянная, а в SubjectAPI ее изменяемая часть
             .addConverterFactory(GsonConverterFactory.create()).build()
 
@@ -79,11 +79,15 @@ class SubjectsFragment : Fragment() {
 
         b.setOnClickListener{
             CoroutineScope(Dispatchers.IO).launch {
-                val subject = subjectAPI.getSubjectById(77) // здесь можно без 77
+                val subject = subjectAPI.getSubjectById() // здесь можно без 77
                 //это типо вызов конкретного предмета, может помочь при выборе учителем предмета
                 runOnUiThread {
-                    tv.text = Subject.title
-
+                    tv.text = subject.get(1).name
+                    var temp = ""
+                    for (i in 0..subject.size -1){
+                        temp += subject.get(i).name + " "
+                    }
+                    tv.text = temp
                 }
 
             }
@@ -91,7 +95,40 @@ class SubjectsFragment : Fragment() {
 
         }
 
-
+        return view
     }
+
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.fragment_subjects)
+//
+//        val tv = findViewById<TextView>(R.id.55) //вместо 55 должно быть айди куда показывать
+//        val b = findViewById<Button>(R.id.66) //вместо 66 должно быть айди или что-нибудь
+//        //что вызывает показ списка предметов, возможно и типо буттон нужно поменять
+//        //а так же наверное такое стоит наверное писать в верхнем онкреате
+//
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://")//тут должна быть ссылка родительская
+//            //типо ссылка постоянная, а в SubjectAPI ее изменяемая часть
+//            .addConverterFactory(GsonConverterFactory.create()).build()
+//
+//        val subjectAPI = retrofit.create(SubjectAPI::class.java)
+//
+//        b.setOnClickListener{
+//            CoroutineScope(Dispatchers.IO).launch {
+//                val subject = subjectAPI.getSubjectById(77) // здесь можно без 77
+//                //это типо вызов конкретного предмета, может помочь при выборе учителем предмета
+//                runOnUiThread {
+//                    tv.text = Subject.title
+//
+//                }
+//
+//            }
+//
+//
+//        }
+
+
+//    }
 
 }
