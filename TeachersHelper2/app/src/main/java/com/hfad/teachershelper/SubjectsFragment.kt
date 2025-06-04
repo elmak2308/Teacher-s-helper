@@ -88,6 +88,7 @@ class SubjectsFragment : Fragment() {
                         temp += subject.get(i).name + " "
                     }
                     tv.text = temp
+                    //цикл
                 }
 
             }
