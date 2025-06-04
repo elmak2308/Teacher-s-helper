@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 from typing import Optional
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker, Session
-from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from server.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from typing import List
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./server/test.db"
@@ -25,13 +25,14 @@ users = db.Table(
     db.Column("hashed_password", db.String),
     db.Column("disabled", db.Boolean, default=False), 
 )
-disciplines = db.Table(
-    "disciplines",
+'''
+subjects = db.Table(
+    "subjects",
     metadata,
     db.Column("id", db.Integer, primary_key=True, index=True),
-    db.Column("name", db.String, unique=True, index=True),
-    db.Column("description", db.String)
+    db.Column("name", db.String, unique=True),
 )
+'''
 metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -65,18 +66,9 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     phone: Optional[str] = None
 
-class DisciplineBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-
-class DisciplineCreate(DisciplineBase):
-    pass
-
-class Discipline(DisciplineBase):
+class Subject(BaseModel):
     id: int
-
-    class Config:
-        orm_mode = True
+    name: str
 
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
@@ -191,21 +183,30 @@ async def read_users_me(
         raise HTTPException(status_code=400, detail="Inactive user")
     
     return user
-@app.get("/disciplines/", response_model=List[Discipline])
-def get_disciplines(
-    skip: int = 0,
-    limit: int = 100,
+@app.get("/subjects/", response_model=List[Subject])
+def get_subjects():
+    subjects = [
+        {"id": 1, "name": "Математика"},
+        {"id": 2, "name": "Физика"},
+        {"id": 3, "name": "Химия"},
+        {"id": 4, "name": "Биология"},
+        {"id": 5, "name": "История"},
+        {"id": 6, "name": "Литература"},
+        {"id": 7, "name": "Информатика"},
+        {"id": 8, "name": "География"},
+        {"id": 9, "name": "Обществознание"},
+        {"id": 10, "name": "Английский язык"}
+    ]
+    return subjects
+'''
+@app.get("/protected/subjects/", response_model=List[Subject])
+def get_protected_subjects(
+    token: str = Depends(oauth2_scheme),
     db_session: Session = Depends(get_db)
 ):
-    try:
-        query = db.select([disciplines]).offset(skip).limit(limit)
-        result = db_session.execute(query).fetchall()
-        return [
-            Discipline(
-                id=row.id,
-                name=row.name,
-                description=row.description
-            ) for row in result
-        ]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    current_user = await read_users_me(token, db_session)
+    
+    query = db.select([subjects])
+    result = db_session.execute(query).fetchall()
+    return [dict(row) for row in result]
+'''
