@@ -7,14 +7,13 @@ from passlib.context import CryptContext
 from typing import Optional
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker, Session
-from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from server.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from typing import List
 
-# Database settings (SQLite)
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-engine = db.create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})  # Добавлено для SQLite
+SQLALCHEMY_DATABASE_URL = "sqlite:///./server/test.db"
+engine = db.create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}) 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create users table
 metadata = db.MetaData()
 users = db.Table(
     "users",
@@ -24,27 +23,31 @@ users = db.Table(
     db.Column("email", db.String, unique=True, index=True),
     db.Column("full_name", db.String),
     db.Column("hashed_password", db.String),
-    db.Column("disabled", db.Boolean, default=False),  # Добавлено для управления активностью пользователя
+    db.Column("disabled", db.Boolean, default=False), 
 )
+'''
+subjects = db.Table(
+    "subjects",
+    metadata,
+    db.Column("id", db.Integer, primary_key=True, index=True),
+    db.Column("name", db.String, unique=True),
+)
+'''
 metadata.create_all(bind=engine)
 
-# FastAPI app
 app = FastAPI()
 
-# Password hashing settings
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# OAuth2 scheme for authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Pydantic models
 class UserCreate(BaseModel):
     phone: str
     email: str
     full_name: str
     password: str
 
-class UserInDB(BaseModel):  # Добавлена модель для хранения в БД
+class UserInDB(BaseModel): 
     phone: str
     email: str
     full_name: str
@@ -63,7 +66,10 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     phone: Optional[str] = None
 
-# Helper functions
+class Subject(BaseModel):
+    id: int
+    name: str
+
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -94,7 +100,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# Dependency to get database session
 def get_db():
     db_session = SessionLocal()
     try:
@@ -102,10 +107,8 @@ def get_db():
     finally:
         db_session.close()
 
-# Endpoints
 @app.post("/signup", response_model=User)
 def signup(user: UserCreate, db_session: Session = Depends(get_db)):
-    # Check if user exists by phone or email
     existing_user_phone = get_user(db_session, user.phone)
     existing_user_email = db_session.execute(
         db.select([users]).where(users.c.email == user.email)
@@ -115,11 +118,9 @@ def signup(user: UserCreate, db_session: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Phone number already registered")
     if existing_user_email:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Hash password
+
     hashed_password = get_password_hash(user.password)
     
-    # Save user to DB
     query = users.insert().values(
         phone=user.phone,
         email=user.email,
@@ -144,7 +145,7 @@ def login_for_access_token(
             detail="Incorrect phone number or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    if user.get("disabled", False):  # Проверка на отключенного пользователя
+    if user.get("disabled", False):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Inactive user"
@@ -157,7 +158,7 @@ def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me", response_model=User)
-async def read_users_me(  # Добавлен async для совместимости
+async def read_users_me(  
     token: str = Depends(oauth2_scheme),
     db_session: Session = Depends(get_db)
 ):
@@ -182,3 +183,30 @@ async def read_users_me(  # Добавлен async для совместимос
         raise HTTPException(status_code=400, detail="Inactive user")
     
     return user
+@app.get("/subjects/", response_model=List[Subject])
+def get_subjects():
+    subjects = [
+        {"id": 1, "name": "Математика"},
+        {"id": 2, "name": "Физика"},
+        {"id": 3, "name": "Химия"},
+        {"id": 4, "name": "Биология"},
+        {"id": 5, "name": "История"},
+        {"id": 6, "name": "Литература"},
+        {"id": 7, "name": "Информатика"},
+        {"id": 8, "name": "География"},
+        {"id": 9, "name": "Обществознание"},
+        {"id": 10, "name": "Английский язык"}
+    ]
+    return subjects
+'''
+@app.get("/protected/subjects/", response_model=List[Subject])
+def get_protected_subjects(
+    token: str = Depends(oauth2_scheme),
+    db_session: Session = Depends(get_db)
+):
+    current_user = await read_users_me(token, db_session)
+    
+    query = db.select([subjects])
+    result = db_session.execute(query).fetchall()
+    return [dict(row) for row in result]
+'''
