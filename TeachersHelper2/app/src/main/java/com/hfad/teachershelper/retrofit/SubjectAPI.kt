@@ -9,4 +9,6 @@ interface SubjectAPI {
     //типо как понять какой предмет каким по счету
     suspend fun getSubjectById(): List<Subject>
     //@Path("id") id: Int
+    @GET("subjects/")
+    suspend fun getAllItems(): List<Subject>
 }

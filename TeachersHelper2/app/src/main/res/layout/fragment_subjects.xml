@@ -79,7 +79,6 @@
         android:background="#FFB7CD"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -111,39 +110,49 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rview"
         android:layout_width="409dp"
         android:layout_height="521dp"
         app:layout_constraintBottom_toTopOf="@+id/nav_view_subb"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_subb">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_subb" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
+    <!--    <ScrollView-->
+<!--        android:layout_width="409dp"-->
+<!--        android:layout_height="521dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/nav_view_subb"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toolbar_subb">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textColor="@color/black"
-                app:backgroundTint="#FFE9EF"
-                app:cornerRadius="0dp"
-                android:id="@+id/trix"/>
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical" >-->
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:backgroundTint="#FFE9EF"
-                app:cornerRadius="0dp"
-                android:id="@+id/button"
-                android:text="GET"
-                android:textColor="@color/black"/>
-            </LinearLayout>
-        </ScrollView>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:textColor="@color/black"-->
+<!--                app:backgroundTint="#FFE9EF"-->
+<!--                app:cornerRadius="0dp"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:id="@+id/tv"/>-->
+
+<!--            <Button-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                app:backgroundTint="#FFE9EF"-->
+<!--                app:cornerRadius="0dp"-->
+<!--                android:id="@+id/b"-->
+<!--                android:text="GET"-->
+<!--                android:textColor="@color/black"/>-->
+<!--            </LinearLayout>-->
+<!--        </ScrollView>-->
 
 
         <!--        <ScrollView-->

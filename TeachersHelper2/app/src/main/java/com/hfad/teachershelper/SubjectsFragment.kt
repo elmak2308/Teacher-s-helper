@@ -8,19 +8,25 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil.setContentView
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
+import com.hfad.teachershelper.Adapter.SubjectAdapter
 import com.hfad.teachershelper.retrofit.Subject
 import com.hfad.teachershelper.retrofit.SubjectAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
+import com.hfad.teachershelper.databinding.FragmentSubjectsBinding
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
 
 class SubjectsFragment : Fragment() {
+    private lateinit var adapter: SubjectAdapter
+    lateinit var binding: FragmentSubjectsBinding
 
     private fun runOnUiThread(action: () -> Unit) {
         this ?: return
@@ -32,6 +38,9 @@ class SubjectsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
+
+        binding = SubjectsFragmentBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_subjects, container, false)
         val backsubbtohome = view.findViewById<ImageButton>(R.id.back_subject_to_home)
@@ -64,9 +73,13 @@ class SubjectsFragment : Fragment() {
 //            view.findNavController()
 //                .navigate(R.id.action_subjectsFragment_to_mathSubjectsFragment)
 //        }
+        adapter = SubjectAdapter()
+        binding.rview.layoutManager = LinearLayoutManager(this)
+        binding.rview.adapter = adapter
+        adapter.submitList()
 
-        val tv = view.findViewById<TextView>(R.id.trix) //вместо 55 должно быть айди куда показывать
-        val b = view.findViewById<Button>(R.id.button) //вместо 66 должно быть айди или что-нибудь
+//        val tv = view.findViewById<TextView>(R.id.trix) //вместо 55 должно быть айди куда показывать
+//        val b = view.findViewById<Button>(R.id.button) //вместо 66 должно быть айди или что-нибудь
         //что вызывает показ списка предметов, возможно и типо буттон нужно поменять
         //а так же наверное такое стоит наверное писать в верхнем онкреате
 
@@ -77,22 +90,22 @@ class SubjectsFragment : Fragment() {
 
         val subjectAPI = retrofit.create(SubjectAPI::class.java)
 
-        b.setOnClickListener{
-            CoroutineScope(Dispatchers.IO).launch {
-                val subject = subjectAPI.getSubjectById() // здесь можно без 77
+
+        CoroutineScope(Dispatchers.IO).launch {
+                val list = subjectAPI.getAllItems() // здесь можно без 77
                 //это типо вызов конкретного предмета, может помочь при выборе учителем предмета
                 runOnUiThread {
-                    tv.text = subject.get(1).name
-                    var temp = ""
-                    for (i in 0..subject.size -1){
-                        temp += subject.get(i).name + " "
+                    binding.apply{
+                        adapter.submitList(list)
                     }
-                    tv.text = temp
-                    //цикл
+//                    tv.text = subject.get(1).name
+//                    var temp = ""
+//                    for (i in 0..subject.size -1){
+//                        temp += subject.get(i).name + " "
+//                    }
+//                    tv.text = temp
+//                    //цикл
                 }
-
-            }
-
 
         }
 
