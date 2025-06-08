@@ -1,9 +1,10 @@
 package com.hfad.teachershelper.retrofit
 
+import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.POST
 
-interface SubjectAPI {
+interface MainAPI {
     @GET("subjects/")
 //короче тут должна быть ссылка на предмет
     //типо как понять какой предмет каким по счету
@@ -11,4 +12,9 @@ interface SubjectAPI {
     //@Path("id") id: Int
     @GET("subjects/")
     suspend fun getAllItems(): List<Subject>
+
+    @POST("/signup")
+    suspend fun auth(@Body authRequestFullName: AuthRequestFullName): User
+
+    suspend fun autH(@Body authRequestHashedPassword: AuthRequestHashedPassword): User
 }
