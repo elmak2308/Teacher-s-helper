@@ -48,6 +48,10 @@ class UserSubject(BaseModel):
     user_phone: str
     subject_name: str
 
+class TwoStepAuth:
+    def __init__(self):
+        self.pending_auth = {}
+
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 

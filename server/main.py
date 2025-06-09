@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Request, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from datetime import datetime, timedelta
@@ -13,7 +13,7 @@ from server.Kdb import *
 from server.class_and_def import *
 
 app = FastAPI()
-
+two_step_auth = TwoStepAuth()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @app.post("/signup", response_model=User)
@@ -42,16 +42,61 @@ def signup(user: UserCreate, db_session: Session = Depends(get_db)):
     
     return {"phone": user.phone, "email": user.email, "full_name": user.full_name}
 
-@app.post("/token", response_model=Token)
-def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+@app.post("/token/init", response_model=dict)
+def init_login(
+    request: Request,
+    phone: str = Form(...),
     db_session: Session = Depends(get_db)
 ):
-    user = authenticate_user(db_session, form_data.username, form_data.password)
+    user = get_user(db_session, phone)
     if not user:
         raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User with this phone number not found"
+        )
+    temp_token = create_access_token(
+        data={"sub": phone, "step": "password_required"},
+        expires_delta=timedelta(minutes=5)
+    )
+    two_step_auth.pending_auth[temp_token] = {
+        "phone": phone,
+        "user_agent": request.headers.get("user-agent"),
+        "timestamp": datetime.utcnow()
+    }
+    return {
+        "message": "Password required",
+        "temp_token": temp_token,
+        "next_step": "/token/complete"
+    }
+
+@app.post("/token/complete", response_model=Token)
+def complete_login(
+    password: str = Form(...),
+    temp_token: str = Form(...),
+    db_session: Session = Depends(get_db)
+):
+    try:
+        payload = jwt.decode(temp_token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("step") != "password_required":
+            raise JWTError("Invalid token step")
+        phone = payload.get("sub")
+        if not phone:
+            raise JWTError("No phone in token")
+        if temp_token not in two_step_auth.pending_auth:
+            raise JWTError("Token not found in pending auth")
+        
+    except JWTError as e:
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect phone number or password",
+            detail="Invalid or expired temporary token"
+        )
+    user = authenticate_user(db_session, phone, password)
+    if not user:
+        if temp_token in two_step_auth.pending_auth:
+            del two_step_auth.pending_auth[temp_token]  
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     if user.get("disabled", False):
@@ -59,11 +104,12 @@ def login_for_access_token(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Inactive user"
         )
-    
+    if temp_token in two_step_auth.pending_auth:
+        del two_step_auth.pending_auth[temp_token]
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user["phone"]}, expires_delta=access_token_expires
-    )
+    ) 
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me", response_model=User)
