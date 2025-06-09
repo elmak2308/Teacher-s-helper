@@ -91,10 +91,16 @@ def get_password_hash(password: str):
     return pwd_context.hash(password)
 
 def get_user(db_session: Session, phone: str):
-    query = db.select([users]).where(users.c.phone == phone)
+    query = db.select(users).where(users.c.phone == phone)
     result = db_session.execute(query).fetchone()
     if result:
-        return dict(result)
+        return {
+        "phone": result.phone,
+        "email": result.email,
+        "full_name": result.full_name,
+        "hashed_password": result.hashed_password,
+        "disabled": result.disabled
+    }
 
 def authenticate_user(db_session: Session, phone: str, password: str):
     user = get_user(db_session, phone)
@@ -125,7 +131,7 @@ def get_db():
 def signup(user: UserCreate, db_session: Session = Depends(get_db)):
     existing_user_phone = get_user(db_session, user.phone)
     existing_user_email = db_session.execute(
-        db.select([users]).where(users.c.email == user.email)
+    db.select(users).where(users.c.email == user.email) 
     ).fetchone()
     
     if existing_user_phone:
@@ -210,8 +216,10 @@ def add_subject_for_user(
          raise HTTPException(status_code=401 ,detail="Invalid authentication")
 
      with SubjectsSessionLocal() as sdb:
-         query_check=db.select([user_subjects]).where(
-             (user_subjects.c.user_phone==phone) & (user_subjects.c.subject_name==subject_in.subject_name))
+         query_check = db.select(user_subjects).where( 
+    (user_subjects.c.user_phone == phone) & 
+    (user_subjects.c.subject_name == subject_in.subject_name)
+)
          result=sdb.execute(query_check).fetchone()
          
          if result:
@@ -230,7 +238,7 @@ def get_user_subjects(token:str=Depends(oauth2_scheme)):
      if not phone:
          raise HTTPException(status_code=401 ,detail="Invalid authentication")
      with SubjectsSessionLocal() as sdb:
-         query=db.select([user_subjects]).where(user_subjects.c.user_phone==phone)
+         query = db.select(user_subjects).where(user_subjects.c.user_phone == phone)
          results=sdb.execute(query).fetchall()
          
          subjects_list=[]
