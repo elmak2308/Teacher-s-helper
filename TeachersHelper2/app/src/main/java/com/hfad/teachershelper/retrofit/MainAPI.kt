@@ -16,10 +16,12 @@ interface MainAPI {
     @GET("subjects/")
     suspend fun getAllItems(): List<Subject>
 
-    @POST("/signup")
+    @POST("/signup") // сменить url
     suspend fun auth(@Body authRequestFullName: AuthRequestFullName): User
-
+    @POST("/hhh")// сменить url
     suspend fun autH(@Body authRequestHashedPassword: AuthRequestHashedPassword): User
+
+
     @POST("/token")
     suspend fun sendLoginPaorol(@Body loginParol: Login_parol): ResponseData
     suspend fun getToken(@Field("grant_type") grantType: String = "password",

@@ -16,6 +16,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.hfad.teachershelper.retrofit.AuthRequestFullName
 import com.hfad.teachershelper.retrofit.AuthRequestHashedPassword
+import com.hfad.teachershelper.retrofit.Login_parol
 import com.hfad.teachershelper.retrofit.MainAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,10 +28,22 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginparolFragment : Fragment() {
     private lateinit var mainAPI: MainAPI
-    private lateinit var okButtonHome: Button
-    private lateinit var otmenaButton: Button
-    private lateinit var zabilParolButton: Button
-    private lateinit var passwordEdit: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var loginButton: Button
+    private var userLogin: String = ""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        userLogin = arguments?.getString("login") ?: ""
+
+
+        // Инициализация Retrofit
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:8000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        mainAPI = retrofit.create(MainAPI::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,77 +52,157 @@ class LoginparolFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_loginparol, container, false)
 
-        // Инициализация UI элементов
-        okButtonHome = view.findViewById(R.id.okei_to_home)
-        otmenaButton = view.findViewById(R.id.otmena_reg)
-        zabilParolButton = view.findViewById(R.id.parolzabil)
-        passwordEdit = view.findViewById(R.id.passwordEdit)
+        passwordEditText = view.findViewById(R.id.passwordEdit)
+        loginButton = view.findViewById(R.id.okei_to_home)
 
-        // Настройка Retrofit
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        mainAPI = retrofit.create(MainAPI::class.java)
+        val otmenaButtontologin = view.findViewById<Button>(R.id.otmena_reg)
 
-        // Блокировка кнопки по умолчанию
-        okButtonHome.isEnabled = false
+        otmenaButtontologin.setOnClickListener {
+            view.findNavController()
+                .navigate(R.id.action_loginparolFragment2_to_loginFragment)
+        }
 
-        // Проверка ввода пароля
-        passwordEdit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                validateInput()
+        // Показываем логин пользователю (опционально)
+        view.findViewById<TextView>(R.id.choose_account_spin).text = userLogin
+
+        loginButton.setOnClickListener {
+            val password = passwordEditText.text.toString().trim()
+
+            if (password.length < 6) {
+                showError("Пароль должен содержать минимум 6 символов")
+                return@setOnClickListener
             }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
 
-        // Обработчики нажатий
-        okButtonHome.setOnClickListener {
-            authenticateAndNavigate()
-        }
-
-        otmenaButton.setOnClickListener {
-            navigateTo(R.id.action_loginparolFragment2_to_loginFragment)
-        }
-
-        zabilParolButton.setOnClickListener {
-            navigateTo(R.id.action_loginparolFragment2_to_zabilParolFragment)
+            authenticateUser(userLogin, password)
         }
 
         return view
     }
 
-    private fun validateInput() {
-        okButtonHome.isEnabled = passwordEdit.text.toString().trim().isNotEmpty()
-    }
-
-    private fun authenticateAndNavigate() {
-        val password = passwordEdit.text.toString()
-
-        CoroutineScope(Dispatchers.IO).launch {
+    private fun authenticateUser(login: String, password: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = mainAPI.autH(
-                    AuthRequestHashedPassword(
-                        email = password
-                    )
+                val response = mainAPI.getToken(
+                    username = login,
+                    password = password
                 )
 
-                activity?.runOnUiThread {
-                    if (response != null) { // Успешная аутентификация
-                        navigateTo(R.id.action_loginparolFragment2_to_homeFragment)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        response.body()?.accessToken?.let { token ->
+                            saveToken(token)
+                            navigateToMainScreen()
+                        } ?: showError("Ошибка авторизации")
+                    } else {
+                        showError("Неверный логин или пароль")
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    showError("Ошибка соединения: ${e.message}")
+                }
             }
         }
     }
 
-    private fun navigateTo(actionId: Int) {
-        view?.findNavController()?.navigate(actionId)
+    private fun navigateToMainScreen() {
+        findNavController().navigate(R.id.action_loginparolFragment2_to_homeFragment)
+    }
+
+    private fun saveToken(token: String) {
+        // Сохранение токена в SharedPreferences или другом хранилище
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
+
+//class LoginparolFragment : Fragment() {
+//    private lateinit var mainAPI: MainAPI
+//    private lateinit var okButtonHome: Button
+//    private lateinit var otmenaButton: Button
+//    private lateinit var zabilParolButton: Button
+//    private lateinit var passwordEdit: EditText
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        val view = inflater.inflate(R.layout.fragment_loginparol, container, false)
+//
+//        // Инициализация UI элементов
+//        okButtonHome = view.findViewById(R.id.okei_to_home)
+//        otmenaButton = view.findViewById(R.id.otmena_reg)
+//        zabilParolButton = view.findViewById(R.id.parolzabil)
+//        passwordEdit = view.findViewById(R.id.passwordEdit)
+//
+//        // Настройка Retrofit
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:8000/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        mainAPI = retrofit.create(MainAPI::class.java)
+//
+//        // Блокировка кнопки по умолчанию
+//        okButtonHome.isEnabled = false
+//
+//        // Проверка ввода пароля
+//        passwordEdit.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                validateInput()
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
+//
+//        // Обработчики нажатий
+//        okButtonHome.setOnClickListener {
+//            authenticateAndNavigate()
+//        }
+//
+//        otmenaButton.setOnClickListener {
+//            navigateTo(R.id.action_loginparolFragment2_to_loginFragment)
+//        }
+//
+//        zabilParolButton.setOnClickListener {
+//            navigateTo(R.id.action_loginparolFragment2_to_zabilParolFragment)
+//        }
+//
+//        return view
+//    }
+//
+//    private fun validateInput() {
+//        okButtonHome.isEnabled = passwordEdit.text.toString().trim().isNotEmpty()
+//    }
+//
+//    private fun authenticateAndNavigate() {
+//        val password = passwordEdit.text.toString()
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            try {
+//                val response = mainAPI.autH(
+//                    AuthRequestHashedPassword(
+//                        password = password
+//                    )
+//                )
+//
+//                activity?.runOnUiThread {
+//                    if (response != null) { // Успешная аутентификация
+//                        navigateTo(R.id.action_loginparolFragment2_to_homeFragment)
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+//
+//    private fun navigateTo(actionId: Int) {
+//        view?.findNavController()?.navigate(actionId)
+//    }
+//}
 
 
 //class PasswordFragment : Fragment() {

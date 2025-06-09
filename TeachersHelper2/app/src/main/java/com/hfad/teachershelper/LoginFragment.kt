@@ -61,8 +61,13 @@ class LoginFragment : Fragment() {
             }
 
             // Передаём логин на следующий экран через аргументы
-            val action = LoginFragmentDirections.actionLoginFragmentToLoginparolFragment(login)
-            navController.navigate(action)
+            val bundle = Bundle().apply {
+                putString("login", loginEditText.text.toString())
+            }
+            findNavController().navigate(
+                R.id.action_loginFragment_to_loginparolFragment2,
+                bundle
+            )
         }
 
         return view
