@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export FOLDER_ID=xxxxxxxxxxxxxxxxxxx
+yc iam create-token > ~/.iam_token
