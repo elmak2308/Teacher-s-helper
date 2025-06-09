@@ -120,6 +120,37 @@ def add_subject_for_user(
         
     return {"message":"Subject added successfully"}
 
+@app.delete("/subjects/delete/{subject_name}")
+def delete_subject(
+    subject_name: str,
+    token: str = Depends(oauth2_scheme),
+    db_session_users: Session = Depends(get_db)
+):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    phone = payload.get("sub")
+    if not phone:
+        raise HTTPException(status_code=401, detail="Invalid authentication")
+
+    with SubjectsSessionLocal() as sdb:
+        query_check = db.select(user_subjects).where(
+            (user_subjects.c.user_phone == phone) &
+            (user_subjects.c.subject_name == subject_name)
+        )
+        result = sdb.execute(query_check).fetchone()  
+        if not result:
+            raise HTTPException(
+                status_code=404,
+                detail="Subject not found or you don't have permission to delete it"
+            )
+        delete_query = db.delete(user_subjects).where(
+            (user_subjects.c.user_phone == phone) &
+            (user_subjects.c.subject_name == subject_name)
+        )
+        sdb.execute(delete_query)
+        sdb.commit()
+        
+    return {"message": "Subject deleted successfully"}
+
 @app.get("/subjects/", response_model=List[Subject])
 def get_user_subjects(token:str=Depends(oauth2_scheme)):
     payload=jwt.decode(token ,SECRET_KEY , algorithms=[ALGORITHM])
