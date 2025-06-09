@@ -9,13 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.hfad.teachershelper.retrofit.AuthRequestFullName
 import com.hfad.teachershelper.retrofit.AuthRequestHashedPassword
 import com.hfad.teachershelper.retrofit.MainAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -86,7 +91,7 @@ class LoginparolFragment : Fragment() {
             try {
                 val response = mainAPI.autH(
                     AuthRequestHashedPassword(
-                        hashed_password = password
+                        email = password
                     )
                 )
 
@@ -105,6 +110,93 @@ class LoginparolFragment : Fragment() {
         view?.findNavController()?.navigate(actionId)
     }
 }
+
+
+//class PasswordFragment : Fragment() {
+//    private lateinit var mainAPI: MainAPI
+//    private lateinit var passwordEditText: EditText
+//    private lateinit var loginButton: Button
+//    private var userLogin: String = ""
+//
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        arguments?.let {
+//            userLogin = PasswordFragmentArgs.fromBundle(it).login
+//        }
+//
+//        // Инициализация Retrofit
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:8000/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        mainAPI = retrofit.create(MainAPI::class.java)
+//    }
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        val view = inflater.inflate(R.layout.fragment_password, container, false)
+//
+//        passwordEditText = view.findViewById(R.id.password_input)
+//        loginButton = view.findViewById(R.id.login_button)
+//
+//        // Показываем логин пользователю (опционально)
+//        view.findViewById<TextView>(R.id.user_login_text).text = userLogin // тут запихнуть в items roller
+//
+//        loginButton.setOnClickListener {
+//            val password = passwordEditText.text.toString().trim()
+//
+//            if (password.length < 6) {
+//                showError("Пароль должен содержать минимум 6 символов")
+//                return@setOnClickListener
+//            }
+//
+//            authenticateUser(userLogin, password)
+//        }
+//
+//        return view
+//    }
+//
+//    private fun authenticateUser(login: String, password: String) {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            try {
+//                val response = mainAPI.getToken(
+//                    username = login,
+//                    password = password
+//                )
+//
+//                withContext(Dispatchers.Main) {
+//                    if (response.isSuccessful) {
+//                        response.body()?.accessToken?.let { token ->
+//                            saveToken(token)
+//                            navigateToMainScreen()
+//                        } ?: showError("Ошибка авторизации")
+//                    } else {
+//                        showError("Неверный логин или пароль")
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                withContext(Dispatchers.Main) {
+//                    showError("Ошибка соединения: ${e.message}")
+//                }
+//            }
+//        }
+//    }
+//
+//    private fun navigateToMainScreen() {
+//        findNavController().navigate(R.id.action_loginparolFragment2_to_homeFragment)
+//    }
+//
+//    private fun saveToken(token: String) {
+//        // Сохранение токена в SharedPreferences или другом хранилище
+//    }
+//
+//    private fun showError(message: String) {
+//        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//    }
+//}
 
 
 //class LoginparolFragment : Fragment() {
