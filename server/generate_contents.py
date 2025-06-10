@@ -5,20 +5,21 @@ import re
 import sys
 from requests import post
 from textwrap import fill
+from quest_for_gpt import *
 
 parser = argparse.ArgumentParser()
 
-file = open("/home/vboxuser/txtbooks/second.txt")
+file = open(direct)
 
 ARGS = [
-    ('-r', '--role',        str,   'Учитель', 'Role of generator'),
-    ('-a', '--ask',         str,   'Составь тест в формате json из 15 вопросов по тексту',      'Text of question'),
+    ('-r', '--role',        str,   role, 'Role of generator'),
+    ('-a', '--ask',         str,   ask,      'Text of question'),
     ('-f', '--file',        str,   file,                   'File with question'),
-    ('-t', '--temperature', float, 0.1,                    '"Temperature" of model'),
+    ('-t', '--temperature', float, level_of_creative,                    '"Temperature" of model'),
     ('-w', '--wrap-at',     int,   None,                   'Wrap at this symbol'),
     ('-i', '--ident',       int,   None,                   'Ident spaces'),
-    ('-of', '--output-file', str, 'test_new.json', 'File to write JSON output'),
-    ('-T', '--title', str, 'Тест', 'Title of the test'),
+    ('-of', '--output-file', str, file_name, 'File to write JSON output'),
+    ('-T', '--title', str, title, 'Title of the text'),
 ]
 
 def parse_args(parser, args):
@@ -45,12 +46,6 @@ def parse_args(parser, args):
         raise Exception(f'File {file} asked but {e}')
 
     return role, ask, temperature, wrap_at, ident, output_file
-
-folder_id = 'ИД СЕРВЕРНОГО БОТА'
-try:
-    iam_token = open('/home/dan/.iam_token').read().strip() # папка другая
-except IOError as e:
-    raise Exception(f'IAM_TOKEN not found with {e}')
     
 
 def create_data(role, ask, temperature, folder_id):
