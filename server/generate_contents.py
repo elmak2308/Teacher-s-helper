@@ -7,11 +7,12 @@ from textwrap import fill
 
 parser = argparse.ArgumentParser()
 
+# Ввод информации изменить
 ARGS = [
-    ('-r', '--role',        str,   'Технический писатель', 'Role of generator'),
-    ('-a', '--ask',         str,   'Что такое осень',      'Text of question'),
+    ('-r', '--role',        str,   'Помощник учителя', 'Role of generator'), # Получать роль пользователя
+    ('-a', '--ask',         str,   'Что такое осень',      'Text of question'), # В основном это
     ('-f', '--file',        str,   None,                   'File with question'),
-    ('-t', '--temperature', float, 0.1,                    '"Temperature" of model'),
+    ('-t', '--temperature', float, 0.1,                    '"Temperature" of model'), # Настраивать уникальность в программе
     ('-w', '--wrap-at',     int,   None,                   'Wrap at this symbol'),
     ('-i', '--ident',       int,   None,                   'Ident spaces'),
 ]
@@ -53,9 +54,9 @@ def parse_args(parser, args):
 
 
 def parse_yc():
-    folder_id = 'b1g16h2dmk115b1v1ujh'
+    folder_id = 'b1g16h2dmk115b1v1ujh' # фолдер другой
     try:
-        iam_token = open('/home/dan/.iam_token').read().strip()
+        iam_token = open('/home/dan/.iam_token').read().strip() # папка другая
     except IOError as e:
         raise Exception(f'IAM_TOKEN not found with {e}')
     return iam_token, folder_id
@@ -127,4 +128,4 @@ if __name__ == '__main__':
     data = create_data(role, ask, temperature, folder_id)
     rez = post_to_yc(data, iam_token, folder_id)
     to_print = parse_rez(rez, wrap_at, ident)
-    print(to_print)
+    print(to_print) # Замена на вывод файла в директорию
