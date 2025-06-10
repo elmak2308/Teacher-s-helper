@@ -4,14 +4,14 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from typing import Optional
+from typing import Optional, List, Dict, Any
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker, Session
-from typing import List
-from server.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+import requests
+from server.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, API_KEY
 from server.Kdb import *
 from server.class_and_def import *
-
+from openai import *
 app = FastAPI()
 two_step_auth = TwoStepAuth()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -42,6 +42,24 @@ def signup(user: UserCreate, db_session: Session = Depends(get_db)):
     
     return {"phone": user.phone, "email": user.email, "full_name": user.full_name}
 
+@app.post("/token", response_model=Token)
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db_session: Session = Depends(get_db)
+):
+    user = authenticate_user(db_session, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect phone or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["phone"]}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
 @app.post("/token/init", response_model=dict)
 def init_login(
     request: Request,
@@ -63,11 +81,7 @@ def init_login(
         "user_agent": request.headers.get("user-agent"),
         "timestamp": datetime.utcnow()
     }
-    return {
-        "message": "Password required",
-        "temp_token": temp_token,
-        "next_step": "/token/complete"
-    }
+    return temp_token
 
 @app.post("/token/complete", response_model=Token)
 def complete_login(
@@ -212,3 +226,42 @@ def get_user_subjects(token:str=Depends(oauth2_scheme)):
             subjects_list.append({"id":row.id,"name":row.subject_name})
             
     return subjects_list
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat_with_ai(
+    chat_request: ChatRequest,
+    token: str = Depends(oauth2_scheme),
+    db_session: Session = Depends(get_db)
+):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    phone = payload.get("sub")
+    if not phone:
+        raise HTTPException(status_code=401, detail="Invalid authentication")
+    input_data = {
+        "is_sync": chat_request.is_sync,
+        "messages": [
+            {
+                "role": "user",
+                "content": chat_request.message
+            }
+        ]
+    }
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {API_KEY}'
+    }
+    url_endpoint = "https://api.gen-api.ru/api/v1/networks/deepseek-v3"
+    try:
+        if 'response' in ai_response and len(ai_response['response']) > 0:
+            first_response = ai_response['response'][0]
+            if 'choices' in first_response and len(first_response['choices']) > 0:
+                message = first_response['choices'][0].get('message', {})
+                if 'content' in message:
+                    return {"response": message['content']}
+            return {"response": "Не удалось обработать ответ от AI"}            
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Ошибка при обращении к AI сервису: {str(e)}"
+            )
