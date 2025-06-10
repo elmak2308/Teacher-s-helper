@@ -104,7 +104,7 @@ def parse_rez(rez, wrap_at, ident):
                 out += f'{ident}{l}\n'
             out += '\n'
 
-    return f'==============\n\n\n{out}\n\n\n=============='
+    return out
 
 
 if __name__ == '__main__':
