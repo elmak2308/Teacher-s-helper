@@ -9,7 +9,8 @@ from quest_for_gpt import *
 
 parser = argparse.ArgumentParser()
 
-file = open(direct)
+#file = open(direct)
+file = None
 
 ARGS = [
     ('-r', '--role',        str,   role, 'Role of generator'),

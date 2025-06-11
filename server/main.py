@@ -212,3 +212,6 @@ def get_user_subjects(token:str=Depends(oauth2_scheme)):
             subjects_list.append({"id":row.id,"name":row.subject_name})
             
     return subjects_list
+
+# Написать эндпойнт для приема запроса пользователя и возвращение json файла 
+# Эндпойнт получает файл и передаёт его, обмениваясь с generate_contents.py
