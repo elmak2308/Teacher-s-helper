@@ -9,6 +9,7 @@
     android:id="@+id/marksFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view_marks"
         android:layout_width="match_parent"
@@ -102,5 +103,11 @@
             tools:layout_editor_absoluteY="16dp" />
 
     </androidx.appcompat.widget.Toolbar>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="409dp"
+        android:layout_height="521dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="94dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

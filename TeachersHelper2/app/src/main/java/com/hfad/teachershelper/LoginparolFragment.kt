@@ -1,5 +1,6 @@
 package com.hfad.teachershelper
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -31,19 +32,20 @@ class LoginparolFragment : Fragment() {
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private var userLogin: String = ""
+    private lateinit var temp_token: String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        userLogin = arguments?.getString("login") ?: ""
-
-
-        // Инициализация Retrofit
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        mainAPI = retrofit.create(MainAPI::class.java)
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        userLogin = arguments?.getString("login") ?: ""
+//
+//
+//        // Инициализация Retrofit
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:8000/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        mainAPI = retrofit.create(MainAPI::class.java)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,15 +57,31 @@ class LoginparolFragment : Fragment() {
         passwordEditText = view.findViewById(R.id.passwordEdit)
         loginButton = view.findViewById(R.id.okei_to_home)
 
+        arguments?.let {
+            userLogin = it.getString("login", "")
+            temp_token = it.getString("temp_token", "")
+        }
+
         val otmenaButtontologin = view.findViewById<Button>(R.id.otmena_reg)
+        val zabilParolButton = view.findViewById<Button>(R.id.parolzabil)
 
         otmenaButtontologin.setOnClickListener {
             view.findNavController()
                 .navigate(R.id.action_loginparolFragment2_to_loginFragment)
         }
+        zabilParolButton.setOnClickListener {
+            view.findNavController()
+                .navigate(R.id.action_loginparolFragment2_to_zabilParolFragment)
+        }
 
         // Показываем логин пользователю (опционально)
         view.findViewById<TextView>(R.id.choose_account_spin).text = userLogin
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:8000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        mainAPI = retrofit.create(MainAPI::class.java)
 
         loginButton.setOnClickListener {
             val password = passwordEditText.text.toString().trim()
@@ -73,19 +91,24 @@ class LoginparolFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            authenticateUser(userLogin, password)
+            if (password.isEmpty()) {
+                showError("Введите пароль")
+                return@setOnClickListener
+            }
+
+            authenticateUser(password)
         }
 
         return view
     }
 
-    private fun authenticateUser(login: String, password: String) {
-        viewLifecycleOwner.lifecycleScope.launch {
+    private fun authenticateUser(password: String) {
+        lifecycleScope.launch {
             try {
-                val response = mainAPI.getToken(
-                    username = login,
-                    password = password
-                )
+
+                loginButton.isEnabled = false
+//                var temp = AuthRequestHashedPassword(password, temp_token)
+                val response = mainAPI.get(password, temp_token)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
@@ -111,6 +134,11 @@ class LoginparolFragment : Fragment() {
 
     private fun saveToken(token: String) {
         // Сохранение токена в SharedPreferences или другом хранилище
+        val sharedPref = requireActivity().getSharedPreferences("auth", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString("access_token", token)
+            apply()
+        }
     }
 
     private fun showError(message: String) {
