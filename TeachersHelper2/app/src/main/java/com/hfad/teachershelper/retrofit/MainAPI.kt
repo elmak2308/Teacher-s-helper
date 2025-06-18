@@ -43,15 +43,28 @@ interface MainAPI {
     ): Call<AuthResponse>
 
     @FormUrlEncoded
-    @POST("token/init")
-    fun sendPhone(@Field("phone") phone: String): Call<AuthResponse>
+    @POST("login/step1")
+    fun login(
+        @Field("phone") phone: String
+    ): Call<StepOneResponse>
 
     @FormUrlEncoded
-    @POST("token/complete")
-    fun sendPasswordAndToken(
-        @Field("password") password: String,
-        @Field("temp_token") tempToken: String
-    ): Call<AuthResponse>
+    @POST("login/step2")
+    fun parol(
+        @Field("password") password: String
+    ):Call<AuthResponse>
+
+
+//    @FormUrlEncoded
+//    @POST("token/init")
+//    fun sendPhone(@Field("phone") phone: String): Call<AuthResponse>
+//
+//    @FormUrlEncoded
+//    @POST("token/complete")
+//    fun sendPasswordAndToken(
+//        @Field("password") password: String,
+//        @Field("temp_token") tempToken: String
+//    ): Call<AuthResponse>
 
     @GET("users/me")
     fun getUser(@Header("Authorization") token: String): Call<User>
