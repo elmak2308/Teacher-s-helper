@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from typing import List
 from server.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from server.Kdb import *
-from server.class_and_def import *
+import server.class_and_def
 
 app = FastAPI()
 two_step_auth = TwoStepAuth()
