@@ -68,18 +68,6 @@ async def login_step1(
         )
     current_phone = phone  
     return {"message": "Please enter your password"}
-    temp_token = create_access_token(
-        data={"sub": phone, "step": "password_required"},
-        expires_delta=timedelta(minutes=5)
-    )
-    two_step_auth.pending_auth[temp_token] = {
-        "phone": phone,
-        "user_agent": request.headers.get("user-agent"),
-        "timestamp": datetime.utcnow()
-    }
-    return {
-        "temp_token": temp_token
-    }
 
 @app.post("/login/step2", response_model=LoginStep2Response)
 async def login_step2(
