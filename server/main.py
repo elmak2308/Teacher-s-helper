@@ -64,9 +64,7 @@ def init_login(
         "timestamp": datetime.utcnow()
     }
     return {
-        "message": "Password required",
-        "temp_token": temp_token,
-        "next_step": "/token/complete"
+        "temp_token": temp_token
     }
 
 @app.post("/token/complete", response_model=Token)

@@ -20,16 +20,56 @@ interface MainAPI {
 
     @FormUrlEncoded
     @POST("token/init")
-    suspend fun getToken(
+    fun sendPhone(
         @Field("phone") phone: String
-    ): Response<TokenReponse>
+    ): Call<AuthResponse>
 
+    // Второй запрос — отправка пароля и временного токена
     @FormUrlEncoded
     @POST("token/complete")
-    suspend fun get(
+    fun completeLogin(
         @Field("password") password: String,
         @Field("temp_token") tempToken: String
-    ): Response<TokenReponse>
+    ): Call<AuthResponse>
+
+//    @FormUrlEncoded
+//    @POST("signup")
+//    fun signup(
+//        @Field("phone") phone: String,
+//        @Field("email") email: String,
+//        @Field("full_name") fullName: String,
+//        @Field("password") password: String
+//    ): Call<AuthResponse>
+//
+//    @FormUrlEncoded
+//    @POST("token/init")
+//    fun sendPhone(@Field("phone") phone: String): Call<AuthResponse>
+//
+//    @FormUrlEncoded
+//    @POST("token/complete")
+//    fun sendPasswordAndToken(
+//        @Field("password") password: String,
+//        @Field("temp_token") tempToken: String
+//    ): Call<AuthResponse>
+//
+//    @GET("users/me")
+//    fun getUser(@Header("Authorization") token: String): Call<User>
+//
+//    @GET("subjects/")
+//    fun getSubjects(@Header("Authorization") token: String): Call<List<Subject>>
+
+//    @FormUrlEncoded
+//    @POST("token/init")
+//    suspend fun getToken(
+//        @Field("phone") phone: String
+//    ): Response<TokenReponse>
+//
+//    @FormUrlEncoded
+//    @POST("token/complete")
+//    suspend fun get(
+//        @Field("password") password: String,
+//        @Field("temp_token") tempToken: String
+//    ): Response<TokenReponse>
 }
 //    @GET("subjects/{id}")
 //    suspend fun getSubjectById(@Path("id") id: Int): Subject
