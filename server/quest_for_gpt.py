@@ -26,4 +26,4 @@ except IOError as e:
     print("DEBUG: YOU CAN'T GET IAM-TOKEN, PLEASE TRY AGAIN")
     raise Exception(f'IAM_TOKEN not found with {e}')
 
-folder_id = 'b1goanfad3n1392h6v76' # Не меняется (ID серверного бота, отправляющего запросы)
+folder_id = 'ajeaa41771mcad618k2t' # Не меняется (ID серверного бота, отправляющего запросы)
