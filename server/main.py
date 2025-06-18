@@ -14,8 +14,7 @@ from server.class_and_def import *
 from openai import *
 app = FastAPI()
 two_step_auth = TwoStepAuth()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
+current_phone = None
 @app.post("/signup", response_model=User)
 def signup(user: UserCreate, db_session: Session = Depends(get_db)):
     existing_user_phone = get_user(db_session, user.phone)
@@ -41,155 +40,122 @@ def signup(user: UserCreate, db_session: Session = Depends(get_db)):
     db_session.commit()
     
     return {"phone": user.phone, "email": user.email, "full_name": user.full_name}
-
-@app.post("/token", response_model=Token)
-async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+@app.post("/login", response_model=dict)
+async def login(
+    phone: str = Form(...),
+    password: str = Form(...),
     db_session: Session = Depends(get_db)
 ):
-    user = authenticate_user(db_session, form_data.username, form_data.password)
+    user = authenticate_user(db_session, phone, password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect phone or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            detail="Incorrect phone or password"
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user["phone"]}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"auth_token": "zxc"}
 
-@app.post("/token/init", response_model=dict)
-def init_login(
-    request: Request,
+@app.post("/login/step1", response_model=LoginStep1Response)
+async def login_step1(
     phone: str = Form(...),
     db_session: Session = Depends(get_db)
 ):
+    global current_phone
     user = get_user(db_session, phone)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User with this phone number not found"
+            detail="User not found"
         )
-    temp_token = create_access_token(
-        data={"sub": phone, "step": "password_required"},
-        expires_delta=timedelta(minutes=5)
-    )
-    two_step_auth.pending_auth[temp_token] = {
-        "phone": phone,
-        "user_agent": request.headers.get("user-agent"),
-        "timestamp": datetime.utcnow()
-    }
-    return temp_token
+    current_phone = phone  
+    return {"message": "Please enter your password"}
 
-@app.post("/token/complete", response_model=Token)
-def complete_login(
+@app.post("/login/step2", response_model=LoginStep2Response)
+async def login_step2(
     password: str = Form(...),
-    temp_token: str = Form(...),
     db_session: Session = Depends(get_db)
 ):
-    try:
-        payload = jwt.decode(temp_token, SECRET_KEY, algorithms=[ALGORITHM])
-        if payload.get("step") != "password_required":
-            raise JWTError("Invalid token step")
-        phone = payload.get("sub")
-        if not phone:
-            raise JWTError("No phone in token")
-        if temp_token not in two_step_auth.pending_auth:
-            raise JWTError("Token not found in pending auth")
-        
-    except JWTError as e:
+    global current_phone
+    
+    if not current_phone:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired temporary token"
+            detail="Complete step 1 first"
         )
-    user = authenticate_user(db_session, phone, password)
+
+    user = authenticate_user(db_session, current_phone, password)
     if not user:
-        if temp_token in two_step_auth.pending_auth:
-            del two_step_auth.pending_auth[temp_token]  
+        current_phone = None 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect password",
-            headers={"WWW-Authenticate": "Bearer"},
+            detail="Incorrect password"
         )
-    if user.get("disabled", False):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
-        )
-    if temp_token in two_step_auth.pending_auth:
-        del two_step_auth.pending_auth[temp_token]
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user["phone"]}, expires_delta=access_token_expires
-    ) 
-    return {"access_token": access_token, "token_type": "bearer"}
+    current_phone = None
+    return {
+        "auth_token": "zxc"
+    }
 
 @app.get("/users/me", response_model=User)
-async def read_users_me(  
-    token: str = Depends(oauth2_scheme),
+async def read_users_me(
+    auth_token: str,
     db_session: Session = Depends(get_db)
 ):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        phone: str = payload.get("sub")
-        if phone is None:
-            raise credentials_exception
-        token_data = TokenData(phone=phone)
-    except JWTError:
-        raise credentials_exception
+    if auth_token != "zxc":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication"
+        )
+    query = db.select(users)
+    user = db_session.execute(query).fetchone()
+    if not user:
+        raise HTTPException(status_code=404, detail="No users found")
     
-    user = get_user(db_session, phone=token_data.phone)
-    if user is None:
-        raise credentials_exception
-    if user.get("disabled", False):
-        raise HTTPException(status_code=400, detail="Inactive user")
-    
-    return user
+    return {
+        "phone": user.phone,
+        "email": user.email,
+        "full_name": user.full_name
+    }
 
 @app.post("/subjects/add")
 def add_subject_for_user(
     subject_in: UserSubjectCreate,
-    token:str=Depends(oauth2_scheme),
-    db_session_users : Session=Depends(get_db)):
+    auth_token: str,
+    db_session_users: Session = Depends(get_db)):
 
-    payload=jwt.decode(token ,SECRET_KEY , algorithms=[ALGORITHM])
-    phone=payload.get("sub")
-    if not phone:
-        raise HTTPException(status_code=401 ,detail="Invalid authentication")
+    if auth_token != "zxc":
+        raise HTTPException(status_code=401, detail="Invalid authentication")
+
+    phone = "1234567890"
 
     with SubjectsSessionLocal() as sdb:
         query_check = db.select(user_subjects).where( 
-(user_subjects.c.user_phone == phone) & 
-(user_subjects.c.subject_name == subject_in.subject_name)
-)
-        result=sdb.execute(query_check).fetchone()
+            (user_subjects.c.user_phone == phone) & 
+            (user_subjects.c.subject_name == subject_in.subject_name)
+        )
+        result = sdb.execute(query_check).fetchone()
         
         if result:
-            raise HTTPException(status_code=400 ,detail="Subject already added for this user")
+            raise HTTPException(status_code=400, detail="Subject already added for this user")
         
-        insert_query=db.insert(user_subjects).values(user_phone=phone ,subject_name=subject_in.subject_name)
+        insert_query = db.insert(user_subjects).values(
+            user_phone=phone,
+            subject_name=subject_in.subject_name
+        )
         sdb.execute(insert_query)
         sdb.commit()
         
-    return {"message":"Subject added successfully"}
+    return {"message": "Subject added successfully"}
 
 @app.delete("/subjects/delete/{subject_name}")
 def delete_subject(
     subject_name: str,
-    token: str = Depends(oauth2_scheme),
+    auth_token: str,
     db_session_users: Session = Depends(get_db)
 ):
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    phone = payload.get("sub")
-    if not phone:
+    if auth_token != "zxc":
         raise HTTPException(status_code=401, detail="Invalid authentication")
+
+    # For demo purposes, just use a dummy phone
+    phone = "1234567890"
 
     with SubjectsSessionLocal() as sdb:
         query_check = db.select(user_subjects).where(
@@ -212,30 +178,23 @@ def delete_subject(
     return {"message": "Subject deleted successfully"}
 
 @app.get("/subjects/", response_model=List[Subject])
-def get_user_subjects(token:str=Depends(oauth2_scheme)):
-    payload=jwt.decode(token ,SECRET_KEY , algorithms=[ALGORITHM])
-    phone=payload.get("sub")
-    if not phone:
-        raise HTTPException(status_code=401 ,detail="Invalid authentication")
-    with SubjectsSessionLocal() as sdb:
-        query = db.select(user_subjects).where(user_subjects.c.user_phone == phone)
-        results=sdb.execute(query).fetchall()
-        
-        subjects_list=[]
-        for row in results:
-            subjects_list.append({"id":row.id,"name":row.subject_name})
-            
-    return subjects_list
+def get_user_subjects(auth_token: str):
+    if auth_token != "zxc":
+        raise HTTPException(status_code=401, detail="Invalid authentication")
+
+    return [
+        {"id": 1, "name": "Math"},
+        {"id": 2, "name": "Physics"}
+    ]
+
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_with_ai(
     chat_request: ChatRequest,
-    token: str = Depends(oauth2_scheme),
+    auth_token: str,
     db_session: Session = Depends(get_db)
 ):
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    phone = payload.get("sub")
-    if not phone:
+    if auth_token != "zxc":
         raise HTTPException(status_code=401, detail="Invalid authentication")
     input_data = {
         "is_sync": chat_request.is_sync,

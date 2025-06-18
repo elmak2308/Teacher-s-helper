@@ -59,6 +59,13 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
 
+class LoginStep1Response(BaseModel):
+    message: str = "Please enter your password"
+
+class LoginStep2Response(BaseModel):
+    auth_token: str
+    message: str = "Login successful"
+    
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
