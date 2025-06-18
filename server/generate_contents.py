@@ -1,31 +1,25 @@
 #!/usr/bin/env python3
 
 import argparse
-
+import re
+import sys
 from requests import post
 from textwrap import fill
 
 parser = argparse.ArgumentParser()
 
+file = open("/home/vboxuser/txtbooks/second.txt")
+
 ARGS = [
-    ('-r', '--role',        str,   'Технический писатель', 'Role of generator'),
-    ('-a', '--ask',         str,   'Что такое осень',      'Text of question'),
-    ('-f', '--file',        str,   None,                   'File with question'),
+    ('-r', '--role',        str,   'Учитель', 'Role of generator'),
+    ('-a', '--ask',         str,   'Составь тест в формате json из 15 вопросов по тексту',      'Text of question'),
+    ('-f', '--file',        str,   file,                   'File with question'),
     ('-t', '--temperature', float, 0.1,                    '"Temperature" of model'),
     ('-w', '--wrap-at',     int,   None,                   'Wrap at this symbol'),
     ('-i', '--ident',       int,   None,                   'Ident spaces'),
+    ('-of', '--output-file', str, 'test_new.json', 'File to write JSON output'),
+    ('-T', '--title', str, 'Тест', 'Title of the test'),
 ]
-
-# y = x['result']['alternatives'][0]['message']['text']
-# z = y.replace('**','').replace('`','')
-# print('=====================================================')
-# Z = z.split('\n\n')
-# for x in Z:
-#     if len(x) > 60:
-#         print(fill(x),'\n')
-#     else:
-#         print(x)
-# print('=====================================================')
 
 def parse_args(parser, args):
     for a_short, a_long, a_type, a_value, a_help in args:
@@ -39,50 +33,47 @@ def parse_args(parser, args):
     file = args.file
     temperature = args.temperature
     wrap_at = args.wrap_at
+    output_file = args.output_file
     try:
         ident = ' ' * args.ident
     except TypeError:
         ident = args.ident
-        
+
     try:
         ask = open(file).read() if file is not None else ask
     except IOError as e:
         raise Exception(f'File {file} asked but {e}')
 
-    return role, ask, temperature, wrap_at, ident
+    return role, ask, temperature, wrap_at, ident, output_file
 
-
-def parse_yc():
-    folder_id = 'b1g16h2dmk115b1v1ujh'
-    try:
-        iam_token = open('/home/dan/.iam_token').read().strip()
-    except IOError as e:
-        raise Exception(f'IAM_TOKEN not found with {e}')
-    return iam_token, folder_id
-
+folder_id = 'ИД СЕРВЕРНОГО БОТА'
+try:
+    iam_token = open('/home/dan/.iam_token').read().strip() # папка другая
+except IOError as e:
+    raise Exception(f'IAM_TOKEN not found with {e}')
+    
 
 def create_data(role, ask, temperature, folder_id):
     data = {
-      "modelUri": f"gpt://{folder_id}/yandexgpt-lite",
-      "modelUri": f"gpt://{folder_id}/yandexgpt/rc",
-      "completionOptions": {
+        "modelUri": f"gpt://{folder_id}/yandexgpt-lite",
+        "modelUri": f"gpt://{folder_id}/yandexgpt/rc",
+        "completionOptions": {
         "stream": False,
         "temperature": temperature,
         "maxTokens": "5000"
-      },
-      "messages": [
+        },
+        "messages": [
         {
-          "role": "system",
-          "text": role
+            "role": "system",
+            "text": role
         },
         {
-          "role": "user",
-          "text": ask
+            "role": "user",
+            "text": ask
         }
-      ]
+        ]
     }
     return data
-
 
 def post_to_yc(data, iam_token, folder_id):
     x = post(
@@ -122,9 +113,8 @@ def parse_rez(rez, wrap_at, ident):
 
 
 if __name__ == '__main__':
-    role, ask, temperature, wrap_at, ident = parse_args(argparse.ArgumentParser(), ARGS)
-    iam_token, folder_id = parse_yc()
+    role, ask, temperature, wrap_at, ident, output_file = parse_args(argparse.ArgumentParser(), ARGS)
     data = create_data(role, ask, temperature, folder_id)
     rez = post_to_yc(data, iam_token, folder_id)
     to_print = parse_rez(rez, wrap_at, ident)
-    print(to_print)
+    open(output_file, 'w').write(to_print)

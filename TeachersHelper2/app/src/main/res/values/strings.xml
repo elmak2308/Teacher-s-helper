@@ -24,7 +24,7 @@
     <string name="name_history">История</string>
     <string name="name_chemistry">Химия</string>
     <string name="name_mark">Оценки</string>
-    <string name="reg_vxod_kringe">Регистрация / Вход</string>
+    <string name="reg_vxod_kringe">Вход</string>
     <string name="log_bykvi">Введите логин</string>
     <string name="parol">Введите пароль</string>
     <string name="otmena">ОТМЕНА</string>
@@ -44,6 +44,8 @@
     <string name="message_in_rofl_chat">Сообщение</string>
     <string name="account_text">Аккаунт</string>
     <string name="mathSubjectLayout">Математика</string>
+    <string name="registration">Регистрация</string>
+    <string name="parol_padtverditie">Подтвердите пароль</string>
     <string-array name="Choose_subject_spinner_text">
         <item>Математика</item>
         <item>Русский язык</item>
