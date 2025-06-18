@@ -48,16 +48,16 @@ class RegistrationFragment : Fragment() {
             val string2 = editText2.text.toString()
 
             // Запуск корутины (асинхронный запрос)
-            CoroutineScope(Dispatchers.Main).launch {
-                try {
-                    val response = withContext(Dispatchers.IO) {
-                        mainAPI.sendLoginPaorol(Login_parol(string1, string2))
-                    }
-                    Toast.makeText(requireContext(), "Успешно отправлено!", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Toast.makeText(requireContext(), "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
+//            CoroutineScope(Dispatchers.Main).launch {
+//                try {
+//                    val response = withContext(Dispatchers.IO) {
+//                        mainAPI.signup(Login_parol(string1, string2))
+//                    }
+//                    Toast.makeText(requireContext(), "Успешно отправлено!", Toast.LENGTH_SHORT).show()
+//                } catch (e: Exception) {
+//                    Toast.makeText(requireContext(), "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+//                }
+//            }
         }
 
         return view
