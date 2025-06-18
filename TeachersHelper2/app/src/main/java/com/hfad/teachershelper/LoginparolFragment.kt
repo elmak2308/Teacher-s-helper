@@ -33,68 +33,137 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class LoginparolFragment : Fragment() {
+class LoginparolFragment : Fragment(R.layout.fragment_loginparol) {
 
-    private lateinit var passwordInput: EditText
-    private lateinit var okButton: Button
-    private lateinit var mainAPI: MainAPI
+    private lateinit var passwordEditText: EditText
+    private lateinit var submitButton: Button
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_loginparol, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        passwordInput = view.findViewById(R.id.passwordEdit)
-        okButton = view.findViewById(R.id.okei_to_home)
+        passwordEditText = view.findViewById(R.id.passwordEdit)
+        submitButton = view.findViewById(R.id.okei_to_home)
 
-        mainAPI = RetrofitClient.instance.create(MainAPI::class.java)
+        val username = arguments?.getString("USERNAME") ?: ""
+        view.findViewById<TextView>(R.id.choose_account_spin).text = username
 
-        okButton.setOnClickListener {
-            val password = passwordInput.text.toString().trim()
+        val otmenaButtontologin = view.findViewById<Button>(R.id.otmena_reg)
+        val zabilParolButton = view.findViewById<Button>(R.id.parolzabil)
 
-            val tempToken = arguments?.getString("temp_token")
-                ?: return@setOnClickListener.also {
-                    Toast.makeText(requireContext(),
-                        "Токен отсутствует", Toast.LENGTH_SHORT).show()
-                }
+        otmenaButtontologin.setOnClickListener {
+            view.findNavController()
+                .navigate(R.id.action_loginparolFragment2_to_loginFragment)
+        }
+        zabilParolButton.setOnClickListener {
+            view.findNavController()
+                .navigate(R.id.action_loginparolFragment2_to_zabilParolFragment)
+        }
 
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:8000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(MainAPI::class.java)
+
+        submitButton.setOnClickListener {
+            val password = passwordEditText.text.toString()
             if (password.isEmpty()) return@setOnClickListener
 
-            mainAPI.sendPasswordAndToken(password, tempToken).enqueue(object : Callback<AuthResponse> {
+            apiService.parol(password).enqueue(object : Callback<AuthResponse> {
                 override fun onResponse(
                     call: Call<AuthResponse>,
                     response: Response<AuthResponse>
                 ) {
-                    val temp = response.body()
-                    if (response.isSuccessful && response.body()?.access_token != null) {
-                        val accessToken = temp?.access_token
+                    if (response.isSuccessful && response.body() != null ) {
+                        val token = response.body()!!.auth_token
+
+                        // Сохранить токен
+                        val sharedPref = activity?.getSharedPreferences("auth", Context.MODE_PRIVATE)
+                        sharedPref?.edit()?.putString("auth_token", token)?.apply()
+
+                        val bundle = Bundle().apply {
+                        }
+
+                        // Переход к третьему фрагменту
+                        findNavController().navigate(
+                            R.id.action_loginparolFragment2_to_homeFragment,
+                            bundle
+                        )
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Ошибка входа",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, "Неверные данные", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Ошибка сети", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Ошибка сети", Toast.LENGTH_SHORT).show()
                 }
             })
         }
-
-        return view
-    }
-
-    private fun navigateToHomeFragment(token: String) {
-        val bundle = Bundle().apply {
-            putString("access_token", token)
-        }
-        findNavController().navigate(R.id.action_loginparolFragment2_to_homeFragment, bundle)
     }
 }
+
+//    private lateinit var passwordInput: EditText
+//    private lateinit var okButton: Button
+//    private lateinit var mainAPI: MainAPI
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View? {
+//        val view = inflater.inflate(R.layout.fragment_loginparol, container, false)
+//
+//        passwordInput = view.findViewById(R.id.passwordEdit)
+//        okButton = view.findViewById(R.id.okei_to_home)
+//
+//        mainAPI = RetrofitClient.instance.create(MainAPI::class.java)
+//
+//        okButton.setOnClickListener {
+//            val password = passwordInput.text.toString().trim()
+//
+//            val tempToken = arguments?.getString("temp_token")
+//                ?: return@setOnClickListener.also {
+//                    Toast.makeText(requireContext(),
+//                        "Токен отсутствует", Toast.LENGTH_SHORT).show()
+//                }
+//
+//            if (password.isEmpty()) return@setOnClickListener
+//
+//            mainAPI.sendPasswordAndToken(password, tempToken).enqueue(object : Callback<AuthResponse> {
+//                override fun onResponse(
+//                    call: Call<AuthResponse>,
+//                    response: Response<AuthResponse>
+//                ) {
+//                    val temp = response.body()
+//                    if (response.isSuccessful && response.body()?.access_token != null) {
+//                        val accessToken = temp?.access_token
+//                    } else {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Ошибка входа",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+//                    Toast.makeText(requireContext(), "Ошибка сети", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//        }
+//
+//        return view
+//    }
+//
+//    private fun navigateToHomeFragment(token: String) {
+//        val bundle = Bundle().apply {
+//            putString("access_token", token)
+//        }
+//        findNavController().navigate(R.id.action_loginparolFragment2_to_homeFragment, bundle)
+//    }
+//}
 
 //    private lateinit var passwordInput: EditText
 //    private lateinit var tokenView: TextView
