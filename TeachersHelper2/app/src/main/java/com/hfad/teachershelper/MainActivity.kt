@@ -16,5 +16,22 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+
     }
+//    fun goToSecondFragment(tempToken: String, phone: String) {
+//        val bundle = Bundle().apply {
+//            putString("TEMP_TOKEN", tempToken)
+//            putString("PHONE", phone)
+//        }
+//
+//        val secondFragment = LoginparolFragment().apply {
+//            arguments = bundle
+//        }
+//
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.loginFragment, secondFragment)
+//            .addToBackStack(null)
+//            .commit()
+//    }
 }

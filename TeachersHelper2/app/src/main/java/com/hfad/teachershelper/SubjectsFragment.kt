@@ -84,17 +84,17 @@ class SubjectsFragment : Fragment() {
     }
 
     private fun loadSubjects() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val list = mainAPI.getAllItems()
-                runOnUiThread {
-                    adapter.submitList(list)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // Можно добавить обработку ошибок
-            }
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            try {
+//                val list = mainAPI.getSubjects()
+//                runOnUiThread {
+//                    adapter.submitList(list)
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                // Можно добавить обработку ошибок
+//            }
+//        }
     }
 }
 

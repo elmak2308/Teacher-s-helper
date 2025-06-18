@@ -101,8 +101,9 @@
         android:id="@+id/loginparolFragment2"
         android:name="com.hfad.teachershelper.LoginparolFragment"
         android:label="LoginparolFragment" >
+
         <argument
-            android:name="login"
+            android:name="temp_token"
             app:argType="string"/>
         <action
             android:id="@+id/action_loginparolFragment2_to_homeFragment"

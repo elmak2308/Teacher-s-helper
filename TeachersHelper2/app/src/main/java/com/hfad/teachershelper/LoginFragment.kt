@@ -1,5 +1,6 @@
 package com.hfad.teachershelper
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,72 +17,381 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.hfad.teachershelper.retrofit.AuthRequestFullName
+import com.hfad.teachershelper.retrofit.AuthResponse
 import com.hfad.teachershelper.retrofit.MainAPI
+import com.hfad.teachershelper.retrofit.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
 class LoginFragment : Fragment() {
-    private lateinit var navController: NavController
-    private lateinit var loginEditText: EditText
-    private lateinit var continueButton: Button
+
+    private lateinit var phoneInput: EditText
+    private lateinit var okButton: Button
+    private lateinit var mainAPI: MainAPI
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
-        navController = findNavController()
 
-        loginEditText = view.findViewById(R.id.login_to_vxod)
-        continueButton = view.findViewById(R.id.okei_to_loginparol)
+        phoneInput = view.findViewById(R.id.login_to_vxod)
+        okButton = view.findViewById(R.id.okei_to_loginparol)
 
-        // Проверка ввода логина
-        loginEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                continueButton.isEnabled = s?.toString()?.trim()?.isNotEmpty() ?: false
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        mainAPI = RetrofitClient.instance.create(MainAPI::class.java)
 
-        continueButton.setOnClickListener {
-            val login = loginEditText.text.toString().trim()
+        okButton.setOnClickListener {
+            val phone = phoneInput.text.toString().trim()
+            if (phone.isEmpty()) return@setOnClickListener
 
-            // Проверка формата логина (email/телефон)
-            if (!isValidLogin(login)) {
-                showError("Некорректный формат логина")
-                return@setOnClickListener
-            }
+            mainAPI.sendPhone(phone).enqueue(object : Callback<AuthResponse> {
+                override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val tempToken = response.body()?.temp_token ?: return
+                        navigateToPasswordFragment(phone, tempToken)
+                    } else {
+                        Toast.makeText(requireContext(), "Ошибка получения токена", Toast.LENGTH_SHORT).show()
+                    }
+                }
 
-            // Передаём логин на следующий экран через аргументы
-            val bundle = Bundle().apply {
-                putString("login", loginEditText.text.toString())
-            }
-            findNavController().navigate(
-                R.id.action_loginFragment_to_loginparolFragment2,
-                bundle
-            )
+                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+                    Toast.makeText(requireContext(), "Ошибка сети", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
         return view
     }
 
-    private fun isValidLogin(login: String): Boolean {
-        // Реализуйте проверку логина (email или телефон)
-        return login.isNotEmpty() // Базовая проверка
+    private fun navigateToPasswordFragment(phone: String, tempToken: String) {
+        val bundle = Bundle().apply {
+            putString("phone", phone)
+            putString("temp_token", tempToken)
+        }
+        findNavController().navigate(R.id.action_loginFragment_to_loginparolFragment2, bundle)
     }
 
-    private fun showError(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
 }
+
+//    private lateinit var phoneInput: EditText
+//    private lateinit var okButton: Button
+//    private lateinit var mainAPI: MainAPI
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View? {
+//        val view = inflater.inflate(R.layout.fragment_login, container, false)
+//
+//        phoneInput = view.findViewById(R.id.login_to_vxod)
+//        okButton = view.findViewById(R.id.okei_to_loginparol)
+//
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:8000/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        mainAPI = retrofit.create(MainAPI::class.java)
+//
+//        okButton.setOnClickListener {
+//            val phone = phoneInput.text.toString().trim()
+//            if (phone.isEmpty()) return@setOnClickListener
+//
+//            // Вызываем проверку имени пользователя
+//            checkUsername(phone)
+//        }
+//
+//        // Валидация кнопки при вводе текста
+//        phoneInput.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                okButton.isEnabled = s?.toString()?.trim()?.isNotEmpty() ?: false
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
+//
+//        okButton.isEnabled = false
+//
+//        return view
+//    }
+//
+//    private fun checkUsername(phone: String) {
+//        lifecycleScope.launch {
+//            try {
+//                okButton.isEnabled = false
+//
+//                val response = mainAPI.sendPhone(phone)
+//
+//                if (response.isSuccessful) {
+//                    val tempToken = response.body()?.accessToken
+//                    tempToken?.let {
+//                        navigateToLoginParolFragment(phone, it)
+//                    } ?: showError("Ошибка получения временного токена")
+//                } else {
+//                    val error = response.errorBody()?.string()
+//                    showError(error ?: "Пользователь не найден")
+//                }
+//            } catch (e: Exception) {
+//                showError("Ошибка сети: ${e.message}")
+//            } finally {
+//                okButton.isEnabled = true
+//            }
+//        }
+//    }
+//
+//    private fun navigateToLoginParolFragment(phone: String, temp_token: String) {
+//        val bundle = Bundle().apply {
+//            putString("phone", phone)
+//            putString("temp_token", temp_token)
+//        }
+//        findNavController().navigate(
+//            R.id.action_loginFragment_to_loginparolFragment2,
+//            bundle
+//        )
+//    }
+//
+//    private fun showError(message: String) {
+//        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//    }
+//}
+
+
+//class LoginFragment : Fragment() {
+//
+//    private lateinit var phoneInput: EditText
+//    private lateinit var okButton: Button
+//    private lateinit var mainAPI: MainAPI
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View? {
+//        val view = inflater.inflate(R.layout.fragment_login, container, false)
+//
+//        phoneInput = view.findViewById(R.id.login_to_vxod)
+//        okButton = view.findViewById(R.id.okei_to_loginparol)
+//
+//        val phone = phoneInput.text.toString().trim()
+//
+//        okButton.setOnClickListener {
+//
+//            if (phone.isEmpty()) return@setOnClickListener
+//
+//            val api = RetrofitClient.instance.create(MainAPI::class.java)
+//            api.sendPhone(phone).enqueue(object : Callback<AuthResponse> {
+//                override fun onResponse(
+//                    call: Call<AuthResponse>,
+//                    response: Response<AuthResponse>
+//                ) {
+//                    if (response.isSuccessful && response.body()?.success == true) {
+//                        // Предположим, что токен приходит как "temp_token_123456"
+//                        val tempToken = "123456"
+//
+////                        // Переход на второй фрагмент
+////                        (activity as? MainActivity)?.goToSecondFragment(tempToken, phone)
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+//                    // Обработка ошибки
+//                }
+//            })
+//            view.findNavController()
+//                .navigate(R.id.action_loginFragment_to_loginparolFragment2)
+//        }
+//        val bundle = Bundle().apply {
+//                putString("login", phoneInput.text.toString())
+//            }
+//            findNavController().navigate(
+//                R.id.action_loginFragment_to_loginparolFragment2,
+//                bundle
+//            )
+//
+//
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:8000/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        mainAPI = retrofit.create(MainAPI::class.java)
+//
+//
+//        // Проверка ввода логина
+//        phoneInput.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                okButton.isEnabled = s?.toString()?.trim()?.isNotEmpty() ?: false
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
+//
+//        checkUsername(phone)
+//
+//
+//
+//        return view
+//    }
+//
+//    private fun checkUsername(phone: String) {
+//        lifecycleScope.launch {
+//            try {
+//                okButton.isEnabled = false
+////                var temp = AuthRequestFullName(login)
+//
+//                val response = mainAPI.sendPhone(phone)
+//
+//                if (response.isSuccessful) {
+//                    tempToken = response.body()?.accessToken
+//                    tempToken?.let {
+//                        navigateToLoginParolFragment(phone, it)
+//                    } ?: showError("Ошибка получения временного токена")
+//                } else{
+//                    val error = response.errorBody()?.string()
+//                    showError(error ?: "Пользователь не найден")
+//                }
+//            } catch (e: Exception) {
+//                showError("Ошибка сети: ${e.message}")
+//            } finally {
+//                okButton.isEnabled = true
+//            }
+//        }
+//    }
+//
+//    private fun navigateToLoginParolFragment(phone: String, temp_token: String) {
+//        val bundle = Bundle().apply {
+//            putString("phone", phone)
+//            putString("temp_token", temp_token)
+//        }
+//        findNavController().navigate(
+//            R.id.action_loginFragment_to_loginparolFragment2,
+//            bundle
+//        )
+//    }
+//
+//    private fun isValidLogin(login: String): Boolean {
+//        // Реализуйте проверку логина (email или телефон)
+//        return login.isNotEmpty() // Базовая проверка
+//    }
+//
+//    private fun showError(message: String) {
+//        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//    }
+//
+//
+
+
+//    private lateinit var navController: NavController
+//    private lateinit var loginEditText: EditText
+//    private lateinit var continueButton: Button
+//    private lateinit var mainAPI: MainAPI
+//    private var temp_token: String? = null
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        val view = inflater.inflate(R.layout.fragment_login, container, false)
+//        navController = findNavController()
+//
+//        loginEditText = view.findViewById(R.id.login_to_vxod)
+//        continueButton = view.findViewById(R.id.okei_to_loginparol)
+//
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:8000/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        mainAPI = retrofit.create(MainAPI::class.java)
+//
+//
+//        // Проверка ввода логина
+//        loginEditText.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                continueButton.isEnabled = s?.toString()?.trim()?.isNotEmpty() ?: false
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
+//
+//        continueButton.setOnClickListener {
+//            val phone = loginEditText.text.toString().trim()
+//
+//            // Проверка формата логина (email/телефон)
+//            if (!isValidLogin(phone)) {
+//                showError("Некорректный формат логина")
+//                return@setOnClickListener
+//            }
+//
+//            // Передаём логин на следующий экран через аргументы
+////            val bundle = Bundle().apply {
+////                putString("login", loginEditText.text.toString())
+////            }
+////            findNavController().navigate(
+////                R.id.action_loginFragment_to_loginparolFragment2,
+////                bundle
+////            )
+//            checkUsername(phone)
+//        }
+//
+//        return view
+//    }
+//
+//    private fun checkUsername(phone: String) {
+//        lifecycleScope.launch {
+//            try {
+//                continueButton.isEnabled = false
+////                var temp = AuthRequestFullName(login)
+//
+//                val response = mainAPI.getToken(phone)
+//
+//                if (response.isSuccessful) {
+//                    temp_token = response.body()?.accessToken
+//                    temp_token?.let {
+//                        navigateToLoginParolFragment(phone, it)
+//                    } ?: showError("Ошибка получения временного токена")
+//                } else{
+//                    val error = response.errorBody()?.string()
+//                    showError(error ?: "Пользователь не найден")
+//                }
+//            } catch (e: Exception) {
+//                showError("Ошибка сети: ${e.message}")
+//            } finally {
+//                continueButton.isEnabled = true
+//            }
+//        }
+//    }
+//
+//    private fun navigateToLoginParolFragment(phone: String, temp_token: String) {
+//        val bundle = Bundle().apply {
+//            putString("phone", phone)
+//            putString("temp_token", temp_token)
+//        }
+//        findNavController().navigate(
+//            R.id.action_loginFragment_to_loginparolFragment2,
+//            bundle
+//        )
+//    }
+//
+//    private fun isValidLogin(login: String): Boolean {
+//        // Реализуйте проверку логина (email или телефон)
+//        return login.isNotEmpty() // Базовая проверка
+//    }
+//
+//    private fun showError(message: String) {
+//        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//    }
+
 
 
 //class LoginFragment : Fragment() {

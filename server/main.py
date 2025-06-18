@@ -68,6 +68,18 @@ async def login_step1(
         )
     current_phone = phone  
     return {"message": "Please enter your password"}
+    temp_token = create_access_token(
+        data={"sub": phone, "step": "password_required"},
+        expires_delta=timedelta(minutes=5)
+    )
+    two_step_auth.pending_auth[temp_token] = {
+        "phone": phone,
+        "user_agent": request.headers.get("user-agent"),
+        "timestamp": datetime.utcnow()
+    }
+    return {
+        "temp_token": temp_token
+    }
 
 @app.post("/login/step2", response_model=LoginStep2Response)
 async def login_step2(
@@ -224,3 +236,20 @@ async def chat_with_ai(
             status_code=502,
             detail=f"Ошибка при обращении к AI сервису: {str(e)}"
             )
+def get_user_subjects(token:str=Depends(oauth2_scheme)):
+    payload=jwt.decode(token ,SECRET_KEY , algorithms=[ALGORITHM])
+    phone=payload.get("sub")
+    if not phone:
+        raise HTTPException(status_code=401 ,detail="Invalid authentication")
+    with SubjectsSessionLocal() as sdb:
+        query = db.select(user_subjects).where(user_subjects.c.user_phone == phone)
+        results=sdb.execute(query).fetchall()
+        
+        subjects_list=[]
+        for row in results:
+            subjects_list.append({"id":row.id,"name":row.subject_name})
+            
+    return subjects_list
+
+# Написать эндпойнт для приема запроса пользователя и возвращение json файла 
+# Эндпойнт получает файл и передаёт его, обмениваясь с generate_contents.py
