@@ -15,6 +15,7 @@ from openai import *
 app = FastAPI()
 two_step_auth = TwoStepAuth()
 current_phone = None
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") #хз надо нет
 @app.post("/signup", response_model=User)
 def signup(user: UserCreate, db_session: Session = Depends(get_db)):
     existing_user_phone = get_user(db_session, user.phone)
@@ -40,19 +41,16 @@ def signup(user: UserCreate, db_session: Session = Depends(get_db)):
     db_session.commit()
     
     return {"phone": user.phone, "email": user.email, "full_name": user.full_name}
-@app.post("/login", response_model=dict)
-async def login(
+@app.post("/token") #не используеться
+async def login_for_token(
     phone: str = Form(...),
     password: str = Form(...),
     db_session: Session = Depends(get_db)
 ):
     user = authenticate_user(db_session, phone, password)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect phone or password"
-        )
-    return {"auth_token": "zxc"}
+        raise HTTPException(401, "Invalid credentials")
+    return {"access_token": "zxc", "token_type": "bearer"}
 
 @app.post("/login/step1", response_model=LoginStep1Response)
 async def login_step1(
@@ -183,8 +181,8 @@ def get_user_subjects(auth_token: str):
         raise HTTPException(status_code=401, detail="Invalid authentication")
 
     return [
-        {"id": 1, "name": "Math"},
-        {"id": 2, "name": "Physics"}
+        {"id": 1, "name": "Математика"},
+        {"id": 2, "name": "Физика"}
     ]
 
 
@@ -195,7 +193,8 @@ async def chat_with_ai(
     db_session: Session = Depends(get_db)
 ):
     if auth_token != "zxc":
-        raise HTTPException(status_code=401, detail="Invalid authentication")
+        raise HTTPException(status_code=401, detail="Неверная аутентификация")
+    
     input_data = {
         "is_sync": chat_request.is_sync,
         "messages": [
@@ -205,39 +204,45 @@ async def chat_with_ai(
             }
         ]
     }
+    
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': f'Bearer {API_KEY}'
     }
+    
     url_endpoint = "https://api.gen-api.ru/api/v1/networks/deepseek-v3"
     try:
-        if 'response' in ai_response and len(ai_response['response']) > 0:
-            first_response = ai_response['response'][0]
-            if 'choices' in first_response and len(first_response['choices']) > 0:
-                message = first_response['choices'][0].get('message', {})
-                if 'content' in message:
-                    return {"response": message['content']}
-            return {"response": "Не удалось обработать ответ от AI"}            
+        response = requests.post(
+            url_endpoint,
+            json=input_data,
+            headers=headers,
+            timeout=30 
+        )
+        response.raise_for_status()
+        ai_response = response.json()
+
+        if isinstance(ai_response, dict):
+            if 'response' in ai_response and ai_response['response']:
+                first_response = ai_response['response'][0]
+                if 'choices' in first_response and first_response['choices']:
+                    message = first_response['choices'][0].get('message', {})
+                    return {"response": message.get('content', 'Ответ пуст')}
+        
+        return {"response": "Не удалось обработать ответ от AI"}
+        
     except requests.exceptions.RequestException as e:
+        print(f"Ошибка запроса к AI: {str(e)}")
         raise HTTPException(
             status_code=502,
-            detail=f"Ошибка при обращении к AI сервису: {str(e)}"
-            )
-def get_user_subjects(token:str=Depends(oauth2_scheme)):
-    payload=jwt.decode(token ,SECRET_KEY , algorithms=[ALGORITHM])
-    phone=payload.get("sub")
-    if not phone:
-        raise HTTPException(status_code=401 ,detail="Invalid authentication")
-    with SubjectsSessionLocal() as sdb:
-        query = db.select(user_subjects).where(user_subjects.c.user_phone == phone)
-        results=sdb.execute(query).fetchall()
-        
-        subjects_list=[]
-        for row in results:
-            subjects_list.append({"id":row.id,"name":row.subject_name})
-            
-    return subjects_list
-
+            detail="Сервис AI временно недоступен"
+        )
+    except Exception as e:
+        print(f"Неожиданная ошибка: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Внутренняя ошибка сервера"
+        )
+    
 # Написать эндпойнт для приема запроса пользователя и возвращение json файла 
 # Эндпойнт получает файл и передаёт его, обмениваясь с generate_contents.py
