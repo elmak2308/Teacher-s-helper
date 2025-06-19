@@ -17,9 +17,9 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.hfad.teachershelper.retrofit.AuthRequestFullName
-import com.hfad.teachershelper.retrofit.AuthResponse
 import com.hfad.teachershelper.retrofit.MainAPI
 import com.hfad.teachershelper.retrofit.RetrofitClient
+import com.hfad.teachershelper.retrofit.StepOneResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,56 +32,109 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private lateinit var phoneInput: EditText
-    private lateinit var okButton: Button
-    private lateinit var mainAPI: MainAPI
+    private lateinit var usernameEditText: EditText
+    private lateinit var nextButton: Button
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
-        phoneInput = view.findViewById(R.id.login_to_vxod)
-        okButton = view.findViewById(R.id.okei_to_loginparol)
+        usernameEditText = view.findViewById(R.id.login_to_vxod)
+        nextButton = view.findViewById(R.id.okei_to_loginparol)
 
-        mainAPI = RetrofitClient.instance.create(MainAPI::class.java)
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:8000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-        okButton.setOnClickListener {
-            val phone = phoneInput.text.toString().trim()
-            if (phone.isEmpty()) return@setOnClickListener
+        val apiService = retrofit.create(MainAPI::class.java)
 
-            mainAPI.sendPhone(phone).enqueue(object : Callback<AuthResponse> {
-                override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
-                    if (response.isSuccessful && response.body()?.success == true) {
-                        val tempToken = response.body()?.temp_token ?: return
-                        navigateToPasswordFragment(phone, tempToken)
+        nextButton.setOnClickListener {
+            val username = usernameEditText.text.toString()
+            if (username.isEmpty()) return@setOnClickListener
+
+//            val request = StepOneRequest(username)
+
+            apiService.login(username).enqueue(object : Callback<StepOneResponse> {
+                override fun onResponse(
+                    call: Call<StepOneResponse>,
+                    response: Response<StepOneResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val step1Token = response.body()!!.step1_token
+                        val bundle = Bundle().apply {
+                            putString("STEP1_TOKEN", step1Token)
+                            putString("USERNAME", username)
+                        }
+
+                        findNavController().navigate(
+                            R.id.action_loginFragment_to_loginparolFragment2,
+                            bundle
+                        )
                     } else {
-                        Toast.makeText(requireContext(), "Ошибка получения токена", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Ошибка на шаге 1", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Ошибка сети", Toast.LENGTH_SHORT).show()
+                override fun onFailure(call: Call<StepOneResponse>, t: Throwable) {
+                    Toast.makeText(context, "Ошибка сети", Toast.LENGTH_SHORT).show()
                 }
             })
         }
-
         return view
     }
-
-    private fun navigateToPasswordFragment(phone: String, tempToken: String) {
-        val bundle = Bundle().apply {
-            putString("phone", phone)
-            putString("temp_token", tempToken)
-        }
-        findNavController().navigate(R.id.action_loginFragment_to_loginparolFragment2, bundle)
-    }
-
 }
+
+//    private lateinit var phoneInput: EditText
+//    private lateinit var okButton: Button
+//    private lateinit var mainAPI: MainAPI
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View? {
+//        val view = inflater.inflate(R.layout.fragment_login, container, false)
+//
+//        phoneInput = view.findViewById(R.id.login_to_vxod)
+//        okButton = view.findViewById(R.id.okei_to_loginparol)
+//
+//        mainAPI = RetrofitClient.instance.create(MainAPI::class.java)
+//
+//        okButton.setOnClickListener {
+//            val phone = phoneInput.text.toString().trim()
+//            if (phone.isEmpty()) return@setOnClickListener
+//
+//            mainAPI.sendPhone(phone).enqueue(object : Callback<AuthResponse> {
+//                override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+//                    if (response.isSuccessful && response.body()?.success == true) {
+//                        val tempToken = response.body()?.temp_token ?: return
+//                        navigateToPasswordFragment(phone, tempToken)
+//                    } else {
+//                        Toast.makeText(requireContext(), "Ошибка получения токена", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+//                    Toast.makeText(requireContext(), "Ошибка сети", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//        }
+//
+//        return view
+//    }
+//
+//    private fun navigateToPasswordFragment(phone: String, tempToken: String) {
+//        val bundle = Bundle().apply {
+//            putString("phone", phone)
+//            putString("temp_token", tempToken)
+//        }
+//        findNavController().navigate(R.id.action_loginFragment_to_loginparolFragment2, bundle)
+//    }
+//
+//}
 
 //    private lateinit var phoneInput: EditText
 //    private lateinit var okButton: Button
