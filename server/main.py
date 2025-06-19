@@ -193,7 +193,8 @@ async def chat_with_ai(
     db_session: Session = Depends(get_db)
 ):
     if auth_token != "zxc":
-        raise HTTPException(status_code=401, detail="Invalid authentication")
+        raise HTTPException(status_code=401, detail="Неверная аутентификация")
+    
     input_data = {
         "is_sync": chat_request.is_sync,
         "messages": [
@@ -203,25 +204,45 @@ async def chat_with_ai(
             }
         ]
     }
+    
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': f'Bearer {API_KEY}'
     }
+    
     url_endpoint = "https://api.gen-api.ru/api/v1/networks/deepseek-v3"
     try:
-        if 'response' in ai_response and len(ai_response['response']) > 0:
-            first_response = ai_response['response'][0]
-            if 'choices' in first_response and len(first_response['choices']) > 0:
-                message = first_response['choices'][0].get('message', {})
-                if 'content' in message:
-                    return {"response": message['content']}
-            return {"response": "Не удалось обработать ответ от AI"}            
+        response = requests.post(
+            url_endpoint,
+            json=input_data,
+            headers=headers,
+            timeout=30 
+        )
+        response.raise_for_status()
+        ai_response = response.json()
+
+        if isinstance(ai_response, dict):
+            if 'response' in ai_response and ai_response['response']:
+                first_response = ai_response['response'][0]
+                if 'choices' in first_response and first_response['choices']:
+                    message = first_response['choices'][0].get('message', {})
+                    return {"response": message.get('content', 'Ответ пуст')}
+        
+        return {"response": "Не удалось обработать ответ от AI"}
+        
     except requests.exceptions.RequestException as e:
+        print(f"Ошибка запроса к AI: {str(e)}")
         raise HTTPException(
             status_code=502,
-            detail=f"Ошибка при обращении к AI сервису: {str(e)}"
-            )
-
+            detail="Сервис AI временно недоступен"
+        )
+    except Exception as e:
+        print(f"Неожиданная ошибка: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Внутренняя ошибка сервера"
+        )
+    
 # Написать эндпойнт для приема запроса пользователя и возвращение json файла 
 # Эндпойнт получает файл и передаёт его, обмениваясь с generate_contents.py
