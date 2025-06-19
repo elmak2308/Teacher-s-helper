@@ -46,6 +46,7 @@
     <string name="mathSubjectLayout">Математика</string>
     <string name="registration">Регистрация</string>
     <string name="parol_padtverditie">Подтвердите пароль</string>
+    <string name="RoleTeacherOrNot">Роль</string>
     <string-array name="Choose_subject_spinner_text">
         <item>Математика</item>
         <item>Русский язык</item>
@@ -67,5 +68,9 @@
         <item>Аккаунт3</item>
         <item>Аккаунт4</item>
         <item>Аккаунт5</item>
+    </string-array>
+    <string-array name="TeacherOrNot">
+        <item>Учитель</item>
+        <item>Ученик</item>
     </string-array>
 </resources>
