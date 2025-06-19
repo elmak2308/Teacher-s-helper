@@ -12,7 +12,7 @@ from server.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, AP
 from server.Kdb import *
 from server.class_and_def import *
 from openai import *
-from quest_for_gpt import *
+from server.quest_for_gpt import *
 app = FastAPI()
 two_step_auth = TwoStepAuth()
 current_phone = None
@@ -207,7 +207,6 @@ async def chat_with_ai(
 ):
     if auth_token != "zxc":
         raise HTTPException(status_code=401, detail="Неверная аутентификация")
-    get_ask(chat_request.message)
     input_data = {
         "is_sync": chat_request.is_sync,
         "messages": [
