@@ -152,8 +152,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="25dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     android:background="#00FFFFFF"
                     android:text="@string/personal_data"
                     android:textAlignment="center"
@@ -164,14 +164,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     android:layout_gravity="center">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginBottom="25dp"
                         android:layout_marginRight="25dp"
                         android:layout_marginLeft="30dp"
                         android:text="@string/Choose_subject"
@@ -206,22 +206,41 @@
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="25dp"
-                    android:textColor="@color/black"
-                    android:layout_marginBottom="25dp"
-                    android:text="@string/Confidenshial"
-                    android:textAlignment="center"
-                    android:textSize="24sp" />
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginLeft="70dp"
+                        android:text="@string/RoleTeacherOrNot"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        tools:ignore="RtlCompat" />
+
+
+                    <Spinner
+                        android:id="@+id/choose_TeacherOrNot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:entries="@array/TeacherOrNot"/>
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="20dp"
                     android:textColor="@color/black"
                     android:layout_marginBottom="25dp"
                     android:text="@string/Confidenshial"

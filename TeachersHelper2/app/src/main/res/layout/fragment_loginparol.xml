@@ -146,6 +146,20 @@
 <!--            android:textColorHint="#000000"-->
 <!--            android:textColorLink="#000000" />-->
 
+        <CheckBox
+            android:id="@+id/checkBoxTeachersOrNot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:button="@null"
+            android:drawableBottom="@color/black"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:text="Учитель?" />
+
         <Button
             android:id="@+id/parolzabil"
             android:layout_width="wrap_content"
