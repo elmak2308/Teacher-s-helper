@@ -181,8 +181,8 @@ def get_user_subjects(auth_token: str):
         raise HTTPException(status_code=401, detail="Invalid authentication")
 
     return [
-        {"id": 1, "name": "Math"},
-        {"id": 2, "name": "Physics"}
+        {"id": 1, "name": "Математика"},
+        {"id": 2, "name": "Физика"}
     ]
 
 
